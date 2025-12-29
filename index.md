@@ -3,7 +3,7 @@
 <head>
     <meta charset="UTF-8">
     <meta name="viewport" content="width=device-width, initial-scale=1.0, maximum-scale=1.0, user-scalable=no">
-    <title>TrackRun Pro - Mapas + Video</title>
+    <title>TrackRun Pro - Datos Persistentes</title>
     <link rel="stylesheet" href="https://cdnjs.cloudflare.com/ajax/libs/font-awesome/6.4.0/css/all.min.css">
     <link rel="stylesheet" href="https://unpkg.com/leaflet@1.9.4/dist/leaflet.css" />
     <style>
@@ -87,6 +87,18 @@
         .logo-text p {
             font-size: 0.75rem;
             color: var(--gray);
+        }
+
+        /* Session Status */
+        .session-status {
+            background: rgba(255, 107, 53, 0.2);
+            padding: 8px 15px;
+            border-radius: 20px;
+            font-size: 0.9rem;
+            display: flex;
+            align-items: center;
+            gap: 8px;
+            animation: pulse 2s infinite;
         }
 
         /* Main Content */
@@ -337,97 +349,39 @@
             box-shadow: 0 8px 25px rgba(0, 0, 0, 0.2);
         }
 
-        /* Video Modal */
-        .modal {
-            display: none;
-            position: fixed;
-            top: 0;
-            left: 0;
-            width: 100%;
-            height: 100%;
-            background: rgba(0, 0, 0, 0.9);
-            z-index: 2000;
-            align-items: center;
-            justify-content: center;
-            animation: fadeIn 0.3s ease;
-        }
-
-        .modal-content {
-            background: var(--dark);
+        /* Session Info */
+        .session-info {
+            background: rgba(26, 26, 46, 0.8);
+            backdrop-filter: blur(10px);
             border-radius: var(--border-radius);
-            padding: 30px;
-            max-width: 800px;
-            width: 90%;
-            max-height: 90vh;
-            overflow-y: auto;
-            animation: slideIn 0.4s ease;
-            border: 1px solid rgba(255, 255, 255, 0.1);
+            padding: 25px;
+            box-shadow: var(--shadow);
+            margin-top: 15px;
         }
 
-        .modal-header {
-            display: flex;
-            justify-content: space-between;
-            align-items: center;
-            margin-bottom: 20px;
+        .session-details {
+            display: grid;
+            grid-template-columns: repeat(auto-fit, minmax(200px, 1fr));
+            gap: 15px;
+            margin-top: 15px;
         }
 
-        .modal-title {
-            font-size: 1.5rem;
+        .detail-item {
+            background: rgba(255, 255, 255, 0.05);
+            padding: 15px;
+            border-radius: 12px;
+        }
+
+        .detail-label {
+            font-size: 0.85rem;
+            color: var(--gray);
+            margin-bottom: 5px;
+        }
+
+        .detail-value {
+            font-size: 1.2rem;
             font-weight: 700;
             color: white;
-        }
-
-        .close-modal {
-            background: none;
-            border: none;
-            color: var(--gray);
-            font-size: 1.5rem;
-            cursor: pointer;
-        }
-
-        .video-preview-container {
-            background: #000;
-            border-radius: 8px;
-            overflow: hidden;
-            margin: 20px 0;
-            position: relative;
-        }
-
-        #generatedVideo {
-            width: 100%;
-            display: block;
-        }
-
-        .video-controls {
-            display: flex;
-            justify-content: center;
-            gap: 15px;
-            margin-top: 20px;
-        }
-
-        .video-control-btn {
-            padding: 12px 25px;
-            background: rgba(255, 255, 255, 0.1);
-            border: none;
-            border-radius: 8px;
-            color: white;
-            cursor: pointer;
-            display: flex;
-            align-items: center;
-            gap: 8px;
-            transition: all 0.3s;
-        }
-
-        .video-control-btn:hover {
-            background: rgba(255, 255, 255, 0.2);
-        }
-
-        .video-control-btn.primary {
-            background: var(--secondary);
-        }
-
-        .video-control-btn.primary:hover {
-            background: #0097CC;
         }
 
         /* Toast Notifications */
@@ -484,84 +438,73 @@
             font-size: 0.9rem;
         }
 
-        /* Video Options */
-        .video-options {
-            background: rgba(255, 255, 255, 0.05);
-            padding: 20px;
-            border-radius: 12px;
-            margin-top: 15px;
-        }
-
-        .option-group {
-            margin-bottom: 15px;
-        }
-
-        .option-title {
-            color: var(--secondary);
-            margin-bottom: 10px;
+        /* Start Point Marker */
+        .start-point {
+            background: var(--success);
+            color: white;
+            padding: 8px 15px;
+            border-radius: 20px;
+            font-size: 0.9rem;
+            font-weight: 600;
             display: flex;
             align-items: center;
             gap: 8px;
+            position: absolute;
+            top: 15px;
+            right: 15px;
+            z-index: 1000;
         }
 
-        .orientation-buttons {
+        /* Recovery Modal */
+        .modal {
+            display: none;
+            position: fixed;
+            top: 0;
+            left: 0;
+            width: 100%;
+            height: 100%;
+            background: rgba(0, 0, 0, 0.9);
+            z-index: 2000;
+            align-items: center;
+            justify-content: center;
+            animation: fadeIn 0.3s ease;
+        }
+
+        .modal-content {
+            background: var(--dark);
+            border-radius: var(--border-radius);
+            padding: 30px;
+            max-width: 500px;
+            width: 90%;
+            animation: slideIn 0.4s ease;
+            border: 1px solid rgba(255, 255, 255, 0.1);
+        }
+
+        .modal-header {
             display: flex;
-            gap: 10px;
-            margin-top: 10px;
+            justify-content: space-between;
+            align-items: center;
+            margin-bottom: 20px;
         }
 
-        .orientation-btn {
-            flex: 1;
-            padding: 12px;
-            background: rgba(255, 255, 255, 0.05);
-            border: 2px solid transparent;
-            border-radius: 8px;
+        .modal-title {
+            font-size: 1.5rem;
+            font-weight: 700;
             color: white;
-            text-align: center;
+        }
+
+        .close-modal {
+            background: none;
+            border: none;
+            color: var(--gray);
+            font-size: 1.5rem;
             cursor: pointer;
-            transition: all 0.3s;
-        }
-
-        .orientation-btn:hover {
-            background: rgba(255, 255, 255, 0.1);
-        }
-
-        .orientation-btn.active {
-            background: rgba(0, 168, 232, 0.2);
-            border-color: var(--secondary);
-        }
-
-        .quality-buttons {
-            display: grid;
-            grid-template-columns: repeat(3, 1fr);
-            gap: 10px;
-            margin-top: 10px;
-        }
-
-        .quality-btn {
-            padding: 15px 10px;
-            background: rgba(255, 255, 255, 0.05);
-            border: 2px solid transparent;
-            border-radius: 8px;
-            color: white;
-            text-align: center;
-            cursor: pointer;
-            transition: all 0.3s;
-        }
-
-        .quality-btn:hover {
-            background: rgba(255, 255, 255, 0.1);
-        }
-
-        .quality-btn.active {
-            background: rgba(0, 168, 232, 0.2);
-            border-color: var(--secondary);
         }
 
         /* Animations */
         @keyframes pulse {
             0% { opacity: 1; }
-            50% { opacity: 0.5; }
+            50% { opacity: 0.7; }
             100% { opacity: 1; }
         }
 
@@ -594,15 +537,6 @@
                 font-size: 1.8rem;
             }
             
-            .modal-content {
-                width: 95%;
-                padding: 20px;
-            }
-            
-            .quality-buttons {
-                grid-template-columns: 1fr;
-            }
-            
             .map-type-selector {
                 justify-content: center;
             }
@@ -621,70 +555,6 @@
             .map-container {
                 min-height: 350px;
             }
-            
-            .map-type-btn {
-                padding: 6px 12px;
-                font-size: 0.8rem;
-            }
-        }
-
-        /* Start Point Marker */
-        .start-point {
-            background: var(--success);
-            color: white;
-            padding: 8px 15px;
-            border-radius: 20px;
-            font-size: 0.9rem;
-            font-weight: 600;
-            display: flex;
-            align-items: center;
-            gap: 8px;
-            position: absolute;
-            top: 15px;
-            right: 15px;
-            z-index: 1000;
-        }
-
-        /* Map Legend */
-        .map-legend {
-            position: absolute;
-            bottom: 15px;
-            left: 15px;
-            background: rgba(0, 0, 0, 0.8);
-            color: white;
-            padding: 10px 15px;
-            border-radius: 8px;
-            font-size: 0.8rem;
-            z-index: 1000;
-            backdrop-filter: blur(5px);
-        }
-
-        .legend-item {
-            display: flex;
-            align-items: center;
-            gap: 8px;
-            margin-bottom: 5px;
-        }
-
-        .legend-color {
-            width: 12px;
-            height: 12px;
-            border-radius: 50%;
-        }
-
-        .legend-color.start {
-            background: var(--success);
-        }
-
-        .legend-color.current {
-            background: #FF6B35;
-        }
-
-        .legend-color.route {
-            background: #FF6B35;
-            width: 20px;
-            height: 4px;
-            border-radius: 2px;
         }
     </style>
 </head>
@@ -698,8 +568,12 @@
                 </div>
                 <div class="logo-text">
                     <h1>TrackRun Pro</h1>
-                    <p>6 Tipos de Mapas + Generador de Video</p>
+                    <p>Datos persistentes - No se pierden al recargar</p>
                 </div>
+            </div>
+            <div class="session-status" id="sessionStatus" style="display: none;">
+                <i class="fas fa-history"></i>
+                <span>RECUPERANDO SESIÓN ACTIVA...</span>
             </div>
         </header>
 
@@ -716,7 +590,7 @@
                             <div class="gps-indicator" id="gpsIndicator"></div>
                             <div>
                                 <h3 id="gpsStatusText">Inicializando GPS...</h3>
-                                <p id="gpsDetails">Cargando mapas...</p>
+                                <p id="gpsDetails">Cargando datos guardados...</p>
                             </div>
                         </div>
                     </div>
@@ -724,23 +598,7 @@
                     <!-- Start Point Marker -->
                     <div class="start-point" id="startPoint" style="display: none;">
                         <i class="fas fa-flag-checkered"></i>
-                        Punto de inicio fijado
-                    </div>
-
-                    <!-- Map Legend -->
-                    <div class="map-legend" id="mapLegend" style="display: none;">
-                        <div class="legend-item">
-                            <div class="legend-color start"></div>
-                            <span>Punto de inicio</span>
-                        </div>
-                        <div class="legend-item">
-                            <div class="legend-color current"></div>
-                            <span>Posición actual</span>
-                        </div>
-                        <div class="legend-item">
-                            <div class="legend-color route"></div>
-                            <span>Ruta recorrida</span>
-                        </div>
+                        <span id="startPointText">Punto de inicio fijado</span>
                     </div>
                 </div>
 
@@ -755,15 +613,6 @@
                         </button>
                         <button class="map-type-btn" data-type="topographic">
                             <i class="fas fa-mountain"></i> Topográfico
-                        </button>
-                        <button class="map-type-btn" data-type="dark">
-                            <i class="fas fa-moon"></i> Oscuro
-                        </button>
-                        <button class="map-type-btn" data-type="light">
-                            <i class="fas fa-sun"></i> Claro
-                        </button>
-                        <button class="map-type-btn" data-type="cycle">
-                            <i class="fas fa-bicycle"></i> Ciclismo
                         </button>
                     </div>
                     <button class="icon-btn" id="centerMapBtn" title="Centrar en mi ubicación">
@@ -825,147 +674,92 @@
                         </button>
                     </div>
 
-                    <!-- GPS Information -->
-                    <div style="background: rgba(255,255,255,0.05); padding: 15px; border-radius: 12px; margin-top: 15px;">
-                        <h4 style="margin-bottom: 10px; color: var(--secondary);">
-                            <i class="fas fa-satellite"></i> Información GPS
+                    <!-- Session Info -->
+                    <div class="session-info">
+                        <h4 style="color: var(--secondary); margin-bottom: 15px;">
+                            <i class="fas fa-history"></i> Información de Sesión
                         </h4>
-                        <div style="font-size: 0.9rem;">
-                            <div style="display: flex; justify-content: space-between; margin-bottom: 5px;">
-                                <span>Estado:</span>
-                                <span id="statusText">Esperando GPS...</span>
+                        <div class="session-details">
+                            <div class="detail-item">
+                                <div class="detail-label">Estado</div>
+                                <div class="detail-value" id="sessionState">Inactiva</div>
                             </div>
-                            <div style="display: flex; justify-content: space-between; margin-bottom: 5px;">
-                                <span>Precisión:</span>
-                                <span id="accuracyText">-- metros</span>
+                            <div class="detail-item">
+                                <div class="detail-label">Iniciada</div>
+                                <div class="detail-value" id="sessionStart">--:--:--</div>
                             </div>
-                            <div style="display: flex; justify-content: space-between;">
-                                <span>Mapa actual:</span>
-                                <span id="currentMapText">Callejero</span>
+                            <div class="detail-item">
+                                <div class="detail-label">Posiciones</div>
+                                <div class="detail-value" id="sessionPositions">0</div>
                             </div>
+                            <div class="detail-item">
+                                <div class="detail-label">Último guardado</div>
+                                <div class="detail-value" id="lastSave">--:--:--</div>
+                            </div>
+                        </div>
+                        <div style="margin-top: 15px; font-size: 0.8rem; color: var(--gray);">
+                            <i class="fas fa-info-circle"></i> Los datos se guardan automáticamente cada 10 segundos
                         </div>
                     </div>
 
                     <!-- Quick Actions -->
                     <div style="margin-top: 20px;">
-                        <button class="control-btn" id="locateBtn" style="background: rgba(0,168,232,0.2);">
-                            <i class="fas fa-location-crosshairs"></i> UBICARME AHORA
+                        <button class="control-btn" id="saveSessionBtn" style="background: rgba(76,175,80,0.2);">
+                            <i class="fas fa-save"></i> GUARDAR SESIÓN MANUALMENTE
                         </button>
                     </div>
-                </div>
-
-                <!-- Video Options (oculto por defecto) -->
-                <div class="video-options" id="videoOptions" style="display: none;">
-                    <div class="option-group">
-                        <div class="option-title">
-                            <i class="fas fa-arrows-alt-v"></i> Orientación del Video
-                        </div>
-                        <div class="orientation-buttons">
-                            <button class="orientation-btn active" data-orientation="horizontal">
-                                <i class="fas fa-desktop"></i> Horizontal
-                            </button>
-                            <button class="orientation-btn" data-orientation="vertical">
-                                <i class="fas fa-mobile-alt"></i> Vertical
-                            </button>
-                        </div>
-                    </div>
-
-                    <div class="option-group">
-                        <div class="option-title">
-                            <i class="fas fa-hd"></i> Calidad del Video
-                        </div>
-                        <div class="quality-buttons">
-                            <button class="quality-btn active" data-quality="1080p">
-                                <div>Full HD</div>
-                                <div style="font-size: 0.8rem; color: #aaa;">1080p - Alta calidad</div>
-                            </button>
-                            <button class="quality-btn" data-quality="720p">
-                                <div>HD</div>
-                                <div style="font-size: 0.8rem; color: #aaa;">720p - Calidad media</div>
-                            </button>
-                            <button class="quality-btn" data-quality="480p">
-                                <div>Standard</div>
-                                <div style="font-size: 0.8rem; color: #aaa;">480p - Para móviles</div>
-                            </button>
-                        </div>
-                    </div>
-
-                    <div class="option-group">
-                        <div class="option-title">
-                            <i class="fas fa-map"></i> Tipo de Mapa en Video
-                        </div>
-                        <div class="quality-buttons">
-                            <button class="quality-btn active" data-map="satellite">
-                                <div>Satélite</div>
-                                <div style="font-size: 0.8rem; color: #aaa;">Vista aérea real</div>
-                            </button>
-                            <button class="quality-btn" data-map="topographic">
-                                <div>Topográfico</div>
-                                <div style="font-size: 0.8rem; color: #aaa;">Con relieve</div>
-                            </button>
-                            <button class="quality-btn" data-map="dark">
-                                <div>Oscuro</div>
-                                <div style="font-size: 0.8rem; color: #aaa;">Modo nocturno</div>
-                            </button>
-                        </div>
-                    </div>
-
-                    <div class="option-group">
-                        <div class="option-title">
-                            <i class="fas fa-cog"></i> Opciones Avanzadas
-                        </div>
-                        <label style="display: flex; align-items: center; gap: 10px; margin-bottom: 10px; cursor: pointer;">
-                            <input type="checkbox" id="showStats" checked style="width: 18px; height: 18px;">
-                            <span>Mostrar estadísticas en video</span>
-                        </label>
-                        <label style="display: flex; align-items: center; gap: 10px; margin-bottom: 10px; cursor: pointer;">
-                            <input type="checkbox" id="showRoute" checked style="width: 18px; height: 18px;">
-                            <span>Mostrar ruta completa animada</span>
-                        </label>
-                        <label style="display: flex; align-items: center; gap: 10px; cursor: pointer;">
-                            <input type="checkbox" id="showSpeed" checked style="width: 18px; height: 18px;">
-                            <span>Mostrar velocidad en tiempo real</span>
-                        </label>
-                    </div>
-
-                    <button class="control-btn video" id="generateVideoBtn" style="margin-top: 20px;">
-                        <i class="fas fa-play-circle"></i> GENERAR VIDEO AHORA
-                    </button>
                 </div>
             </section>
         </main>
     </div>
 
-    <!-- Video Modal -->
-    <div class="modal" id="videoModal">
+    <!-- Recovery Modal -->
+    <div class="modal" id="recoveryModal">
         <div class="modal-content">
             <div class="modal-header">
-                <h3 class="modal-title">Video Generado</h3>
-                <button class="close-modal" id="closeModal">&times;</button>
+                <h3 class="modal-title">
+                    <i class="fas fa-history"></i> Sesión Recuperada
+                </h3>
             </div>
-            
-            <div id="videoPreviewContent">
-                <!-- Contenido será insertado aquí -->
-            </div>
-        </div>
-    </div>
-
-    <!-- Generating Modal -->
-    <div class="modal" id="generatingModal">
-        <div class="modal-content" style="max-width: 500px;">
-            <div class="modal-header">
-                <h3 class="modal-title">Generando Video...</h3>
-            </div>
-            <div style="text-align: center; padding: 40px 20px;">
-                <div class="spinner" style="width: 60px; height: 60px; border: 4px solid rgba(255,255,255,0.1); border-top-color: var(--primary); border-radius: 50%; margin: 0 auto 20px; animation: spin 1s linear infinite;"></div>
-                <h4 id="generationStep">Preparando video...</h4>
-                <div class="progress-container">
-                    <div class="progress-bar" id="generationProgress"></div>
+            <div style="padding: 20px;">
+                <div style="background: rgba(255,107,53,0.1); padding: 15px; border-radius: 8px; margin-bottom: 20px;">
+                    <h4 style="color: var(--primary); margin-bottom: 10px;">
+                        <i class="fas fa-exclamation-triangle"></i> Sesión activa encontrada
+                    </h4>
+                    <p>Se ha recuperado una sesión de carrera en curso que fue interrumpida.</p>
                 </div>
-                <div class="progress-text" id="progressText">0% completado</div>
-                <p style="color: #aaa; margin-top: 20px; font-size: 0.9rem;">
-                    <i class="fas fa-info-circle"></i> Generando video en alta calidad con mapa seleccionado
-                </p>
+                
+                <div class="session-details">
+                    <div class="detail-item">
+                        <div class="detail-label">Tiempo transcurrido</div>
+                        <div class="detail-value" id="recoveryTime">00:00:00</div>
+                    </div>
+                    <div class="detail-item">
+                        <div class="detail-label">Distancia recorrida</div>
+                        <div class="detail-value" id="recoveryDistance">0.00 km</div>
+                    </div>
+                    <div class="detail-item">
+                        <div class="detail-label">Posiciones guardadas</div>
+                        <div class="detail-value" id="recoveryPositions">0</div>
+                    </div>
+                </div>
+                
+                <div style="margin-top: 30px;">
+                    <p style="margin-bottom: 15px; color: var(--light);">
+                        ¿Qué deseas hacer con esta sesión?
+                    </p>
+                    <div style="display: flex; flex-direction: column; gap: 10px;">
+                        <button class="control-btn start" id="resumeSessionBtn">
+                            <i class="fas fa-play"></i> REANUDAR SESIÓN
+                        </button>
+                        <button class="control-btn" id="saveAndNewBtn" style="background: rgba(0,168,232,0.2);">
+                            <i class="fas fa-save"></i> GUARDAR Y COMENZAR NUEVA
+                        </button>
+                        <button class="control-btn reset" id="discardSessionBtn">
+                            <i class="fas fa-trash"></i> DESCARTAR SESIÓN
+                        </button>
+                    </div>
+                </div>
             </div>
         </div>
     </div>
@@ -978,12 +772,20 @@
 
     <!-- Leaflet -->
     <script src="https://unpkg.com/leaflet@1.9.4/dist/leaflet.js"></script>
-    <!-- HTML2Canvas para capturar pantalla -->
-    <script src="https://cdnjs.cloudflare.com/ajax/libs/html2canvas/1.4.1/html2canvas.min.js"></script>
     <script>
         // ============================================
-        // VARIABLES GLOBALES
+        // VARIABLES GLOBALES Y CONSTANTES
         // ============================================
+        const STORAGE_KEYS = {
+            ACTIVE_SESSION: 'trackrun_active_session',
+            SESSION_DATA: 'trackrun_session_data',
+            LAST_SAVE: 'trackrun_last_save',
+            SESSION_HISTORY: 'trackrun_session_history'
+        };
+
+        const AUTO_SAVE_INTERVAL = 10000; // 10 segundos
+        const MAX_POSITIONS = 10000; // Límite de posiciones
+
         let map = null;
         let userMarker = null;
         let routePolyline = null;
@@ -997,159 +799,402 @@
         let totalDistance = 0;
         let elevationGain = 0;
         let maxSpeed = 0;
-        let videoOrientation = 'horizontal';
-        let videoQuality = '1080p';
-        let videoMapType = 'satellite';
-        let currentMapType = 'street';
-        
-        // Capas de mapas disponibles
-        const mapLayers = {
-            street: L.tileLayer('https://{s}.tile.openstreetmap.org/{z}/{x}/{y}.png', {
-                attribution: '© OpenStreetMap',
-                maxZoom: 19
-            }),
-            satellite: L.tileLayer('https://server.arcgisonline.com/ArcGIS/rest/services/World_Imagery/MapServer/tile/{z}/{y}/{x}', {
-                attribution: '© Esri',
-                maxZoom: 19
-            }),
-            topographic: L.tileLayer('https://{s}.tile.opentopomap.org/{z}/{x}/{y}.png', {
-                attribution: '© OpenTopoMap',
-                maxZoom: 17
-            }),
-            dark: L.tileLayer('https://{s}.basemaps.cartocdn.com/dark_all/{z}/{x}/{y}{r}.png', {
-                attribution: '© CARTO',
-                maxZoom: 19
-            }),
-            light: L.tileLayer('https://{s}.basemaps.cartocdn.com/light_all/{z}/{x}/{y}{r}.png', {
-                attribution: '© CARTO',
-                maxZoom: 19
-            }),
-            cycle: L.tileLayer('https://{s}.tile-cyclosm.openstreetmap.fr/cyclosm/{z}/{x}/{y}.png', {
-                attribution: '© CyclOSM',
-                maxZoom: 20
-            })
-        };
+        let autoSaveInterval = null;
+        let recoveredSession = null;
 
         // ============================================
-        // INICIALIZACIÓN
+        // INICIALIZACIÓN CON PERSISTENCIA
         // ============================================
         document.addEventListener('DOMContentLoaded', async () => {
-            console.log('Inicializando TrackRun Pro con 6 tipos de mapas...');
-            await initializeApp();
-            setupEventListeners();
-            setupVideoOptions();
-            setupMapControls();
+            console.log('Inicializando TrackRun Pro con persistencia...');
+            
+            // Mostrar estado de recuperación
+            document.getElementById('sessionStatus').style.display = 'flex';
+            
+            try {
+                // 1. Verificar si hay sesión activa
+                await checkForActiveSession();
+                
+                // 2. Inicializar mapa
+                initMap();
+                
+                // 3. Configurar eventos
+                setupEventListeners();
+                
+                // 4. Inicializar GPS
+                await initializeGPS();
+                
+                document.getElementById('sessionStatus').style.display = 'none';
+                
+            } catch (error) {
+                console.error('Error en inicialización:', error);
+                showToast('Error: ' + error.message, 'error');
+                document.getElementById('sessionStatus').style.display = 'none';
+            }
         });
 
-        async function initializeApp() {
+        // ============================================
+        // SISTEMA DE PERSISTENCIA
+        // ============================================
+        async function checkForActiveSession() {
+            const activeSession = localStorage.getItem(STORAGE_KEYS.ACTIVE_SESSION);
+            
+            if (activeSession === 'true') {
+                console.log('Sesión activa encontrada, recuperando datos...');
+                
+                // Cargar datos de la sesión
+                const sessionData = loadSessionData();
+                
+                if (sessionData && sessionData.positions && sessionData.positions.length > 0) {
+                    recoveredSession = sessionData;
+                    
+                    // Mostrar modal de recuperación
+                    showRecoveryModal(sessionData);
+                    
+                    return true;
+                }
+            }
+            
+            return false;
+        }
+
+        function loadSessionData() {
             try {
-                initMap();
-                await requestGPSPermissions();
-                await getInitialLocation();
-                updateUIForReadyState();
-                showToast('Aplicación lista con 6 tipos de mapas', 'success');
+                const data = localStorage.getItem(STORAGE_KEYS.SESSION_DATA);
+                if (!data) return null;
+                
+                const parsed = JSON.parse(data);
+                
+                // Convertir strings de fecha a objetos Date
+                if (parsed.startTime) {
+                    parsed.startTime = new Date(parsed.startTime);
+                }
+                
+                if (parsed.lastSave) {
+                    parsed.lastSave = new Date(parsed.lastSave);
+                }
+                
+                // Convertir timestamps de posiciones
+                if (parsed.positions && parsed.positions.length > 0) {
+                    parsed.positions = parsed.positions.map(pos => ({
+                        ...pos,
+                        timestamp: new Date(pos.timestamp)
+                    }));
+                }
+                
+                console.log('Datos de sesión cargados:', parsed);
+                return parsed;
+                
             } catch (error) {
-                console.error('Error:', error);
-                showToast('Error al inicializar: ' + error.message, 'error');
+                console.error('Error al cargar datos de sesión:', error);
+                return null;
+            }
+        }
+
+        function saveSessionData() {
+            try {
+                const sessionData = {
+                    startTime: startTime,
+                    positions: positions.slice(-MAX_POSITIONS), // Limitar tamaño
+                    totalDistance: totalDistance,
+                    elevationGain: elevationGain,
+                    maxSpeed: maxSpeed,
+                    startPosition: startPosition,
+                    currentPosition: currentPosition,
+                    isTracking: isTracking,
+                    lastSave: new Date()
+                };
+                
+                localStorage.setItem(STORAGE_KEYS.SESSION_DATA, JSON.stringify(sessionData));
+                localStorage.setItem(STORAGE_KEYS.LAST_SAVE, new Date().toISOString());
+                localStorage.setItem(STORAGE_KEYS.ACTIVE_SESSION, isTracking ? 'true' : 'false');
+                
+                updateLastSaveDisplay();
+                console.log('Sesión guardada:', sessionData.positions.length, 'posiciones');
+                
+            } catch (error) {
+                console.error('Error al guardar sesión:', error);
+                showToast('Error al guardar sesión', 'error');
+            }
+        }
+
+        function clearSessionData() {
+            localStorage.removeItem(STORAGE_KEYS.SESSION_DATA);
+            localStorage.removeItem(STORAGE_KEYS.ACTIVE_SESSION);
+            localStorage.removeItem(STORAGE_KEYS.LAST_SAVE);
+        }
+
+        function archiveSession() {
+            try {
+                const sessionData = loadSessionData();
+                if (!sessionData) return;
+                
+                // Obtener historial actual
+                let history = JSON.parse(localStorage.getItem(STORAGE_KEYS.SESSION_HISTORY) || '[]');
+                
+                // Añadir sesión actual al historial
+                history.push({
+                    ...sessionData,
+                    endTime: new Date(),
+                    archivedAt: new Date().toISOString()
+                });
+                
+                // Mantener solo las últimas 10 sesiones
+                if (history.length > 10) {
+                    history = history.slice(-10);
+                }
+                
+                localStorage.setItem(STORAGE_KEYS.SESSION_HISTORY, JSON.stringify(history));
+                console.log('Sesión archivada en historial');
+                
+            } catch (error) {
+                console.error('Error al archivar sesión:', error);
+            }
+        }
+
+        function updateLastSaveDisplay() {
+            const lastSave = localStorage.getItem(STORAGE_KEYS.LAST_SAVE);
+            if (lastSave) {
+                const time = new Date(lastSave);
+                document.getElementById('lastSave').textContent = 
+                    time.toLocaleTimeString([], {hour: '2-digit', minute:'2-digit'});
             }
         }
 
         // ============================================
-        // SISTEMA DE MAPAS MEJORADO
+        // RECUPERACIÓN DE SESIÓN
+        // ============================================
+        function showRecoveryModal(sessionData) {
+            // Calcular tiempo transcurrido
+            const elapsedTime = sessionData.startTime ? 
+                new Date() - new Date(sessionData.startTime) : 0;
+            
+            const hours = Math.floor(elapsedTime / 3600000);
+            const minutes = Math.floor((elapsedTime % 3600000) / 60000);
+            const seconds = Math.floor((elapsedTime % 60000) / 1000);
+            
+            // Actualizar información en el modal
+            document.getElementById('recoveryTime').textContent = 
+                `${hours.toString().padStart(2, '0')}:${minutes.toString().padStart(2, '0')}:${seconds.toString().padStart(2, '0')}`;
+            
+            document.getElementById('recoveryDistance').textContent = 
+                `${sessionData.totalDistance?.toFixed(2) || '0.00'} km`;
+            
+            document.getElementById('recoveryPositions').textContent = 
+                sessionData.positions?.length || 0;
+            
+            // Mostrar modal
+            document.getElementById('recoveryModal').style.display = 'flex';
+            
+            // Configurar botones del modal
+            document.getElementById('resumeSessionBtn').onclick = () => {
+                resumeSession(sessionData);
+                document.getElementById('recoveryModal').style.display = 'none';
+            };
+            
+            document.getElementById('saveAndNewBtn').onclick = () => {
+                archiveSession();
+                clearSessionData();
+                document.getElementById('recoveryModal').style.display = 'none';
+                initializeNewSession();
+            };
+            
+            document.getElementById('discardSessionBtn').onclick = () => {
+                clearSessionData();
+                document.getElementById('recoveryModal').style.display = 'none';
+                initializeNewSession();
+            };
+        }
+
+        function resumeSession(sessionData) {
+            console.log('Reanudando sesión recuperada...');
+            
+            // Restaurar datos de la sesión
+            startTime = sessionData.startTime;
+            positions = sessionData.positions || [];
+            totalDistance = sessionData.totalDistance || 0;
+            elevationGain = sessionData.elevationGain || 0;
+            maxSpeed = sessionData.maxSpeed || 0;
+            startPosition = sessionData.startPosition;
+            currentPosition = sessionData.currentPosition;
+            isTracking = sessionData.isTracking || false;
+            
+            // Actualizar UI
+            updateStatsDisplay();
+            updateSessionInfo();
+            
+            // Si estaba trackeando, reanudar
+            if (isTracking && sessionData.isTracking) {
+                resumeTracking();
+            } else {
+                // Solo mostrar datos
+                displayRecoveredRoute();
+                showToast('Sesión recuperada. Los datos están listos.', 'success');
+            }
+        }
+
+        function resumeTracking() {
+            console.log('Reanudando seguimiento GPS...');
+            
+            isTracking = true;
+            
+            // Iniciar temporizador
+            updateTimer();
+            timerInterval = setInterval(updateTimer, 1000);
+            
+            // Iniciar seguimiento GPS
+            watchId = navigator.geolocation.watchPosition(
+                (position) => handleNewPosition(position),
+                (error) => handleGPSError(error),
+                { enableHighAccuracy: true, maximumAge: 0, timeout: 10000 }
+            );
+            
+            // Iniciar guardado automático
+            startAutoSave();
+            
+            // Actualizar UI
+            document.getElementById('startBtn').disabled = true;
+            document.getElementById('stopBtn').disabled = false;
+            document.getElementById('startPoint').style.display = 'flex';
+            
+            showToast('¡Sesión reanudada! Seguimiento GPS activado.', 'success');
+            updateGPSStatus('grabando', 'Reanudando grabación...');
+            
+            // Mostrar ruta recuperada
+            displayRecoveredRoute();
+        }
+
+        function displayRecoveredRoute() {
+            if (!map || positions.length === 0) return;
+            
+            // Dibujar ruta recuperada
+            const latLngs = positions.map(p => [p.lat, p.lng]);
+            
+            if (routePolyline) {
+                map.removeLayer(routePolyline);
+            }
+            
+            routePolyline = L.polyline(latLngs, {
+                color: '#FF6B35',
+                weight: 4,
+                opacity: 0.8,
+                dashArray: '5, 10' // Línea punteada para indicar recuperación
+            }).addTo(map);
+            
+            // Centrar en la última posición
+            if (currentPosition) {
+                map.setView([currentPosition.lat, currentPosition.lng], 16);
+                
+                // Actualizar marcador
+                if (!userMarker) {
+                    userMarker = L.marker([currentPosition.lat, currentPosition.lng], {
+                        icon: L.divIcon({
+                            className: 'user-marker',
+                            html: '<div style="background: #FF6B35; width: 24px; height: 24px; border-radius: 50%; border: 3px solid white; box-shadow: 0 0 10px rgba(0,0,0,0.5);"></div>',
+                            iconSize: [24, 24]
+                        })
+                    }).addTo(map);
+                } else {
+                    userMarker.setLatLng([currentPosition.lat, currentPosition.lng]);
+                }
+            }
+            
+            // Mostrar punto de inicio
+            if (startPosition) {
+                L.marker([startPosition.lat, startPosition.lng], {
+                    icon: L.divIcon({
+                        className: 'start-marker',
+                        html: '<div style="background: #4CAF50; width: 20px; height: 20px; border-radius: 50%; border: 3px solid white; box-shadow: 0 0 10px rgba(76,175,80,0.8);"></div>',
+                        iconSize: [20, 20]
+                    })
+                }).addTo(map).bindPopup('Punto de inicio (recuperado)');
+                
+                document.getElementById('startPoint').style.display = 'flex';
+                document.getElementById('startPointText').textContent = 'Punto de inicio (recuperado)';
+            }
+        }
+
+        // ============================================
+        // INICIALIZACIÓN NUEVA SESIÓN
+        // ============================================
+        function initializeNewSession() {
+            // Limpiar variables
+            startTime = null;
+            positions = [];
+            totalDistance = 0;
+            elevationGain = 0;
+            maxSpeed = 0;
+            startPosition = null;
+            currentPosition = null;
+            isTracking = false;
+            
+            // Limpiar mapa
+            if (routePolyline) {
+                map.removeLayer(routePolyline);
+                routePolyline = null;
+            }
+            
+            // Actualizar UI
+            updateStatsDisplay();
+            updateSessionInfo();
+            document.getElementById('startPoint').style.display = 'none';
+            
+            showToast('Listo para nueva sesión', 'info');
+        }
+
+        async function initializeGPS() {
+            try {
+                await requestGPSPermissions();
+                await getInitialLocation();
+                updateUIForReadyState();
+                showToast('GPS listo. Los datos se guardan automáticamente.', 'success');
+            } catch (error) {
+                console.error('Error GPS:', error);
+                showToast('Error GPS: ' + error.message, 'error');
+            }
+        }
+
+        // ============================================
+        // GUARDADO AUTOMÁTICO
+        // ============================================
+        function startAutoSave() {
+            if (autoSaveInterval) {
+                clearInterval(autoSaveInterval);
+            }
+            
+            autoSaveInterval = setInterval(() => {
+                if (isTracking || positions.length > 0) {
+                    saveSessionData();
+                    console.log('Guardado automático realizado');
+                }
+            }, AUTO_SAVE_INTERVAL);
+        }
+
+        function stopAutoSave() {
+            if (autoSaveInterval) {
+                clearInterval(autoSaveInterval);
+                autoSaveInterval = null;
+            }
+        }
+
+        // ============================================
+        // FUNCIONES DE MAPA Y GPS
         // ============================================
         function initMap() {
             const defaultLocation = [40.4168, -3.7038];
             map = L.map('map').setView(defaultLocation, 13);
             
-            // Añadir capa inicial (callejero)
-            mapLayers.street.addTo(map);
-            currentMapType = 'street';
+            L.tileLayer('https://{s}.tile.openstreetmap.org/{z}/{x}/{y}.png', {
+                attribution: '© OpenStreetMap',
+                maxZoom: 19
+            }).addTo(map);
             
             L.control.zoom({ position: 'topright' }).addTo(map);
             L.control.scale({ position: 'bottomleft' }).addTo(map);
             
-            updateGPSStatus('mapa_listo', 'Mapa callejero cargado');
-            document.getElementById('mapLegend').style.display = 'block';
+            updateGPSStatus('mapa_listo', 'Mapa cargado');
         }
 
-        function setupMapControls() {
-            // Botones de tipo de mapa
-            document.querySelectorAll('.map-type-btn').forEach(btn => {
-                btn.addEventListener('click', function() {
-                    const type = this.dataset.type;
-                    
-                    // Remover clase active de todos los botones
-                    document.querySelectorAll('.map-type-btn').forEach(b => b.classList.remove('active'));
-                    // Añadir clase active al botón clickeado
-                    this.classList.add('active');
-                    
-                    // Cambiar mapa
-                    changeMapType(type);
-                });
-            });
-
-            // Botón para centrar mapa
-            document.getElementById('centerMapBtn').addEventListener('click', centerMapOnUser);
-        }
-
-        function changeMapType(type) {
-            if (!mapLayers[type]) {
-                console.error('Tipo de mapa no disponible:', type);
-                return;
-            }
-            
-            // Remover capa actual
-            map.eachLayer((layer) => {
-                if (layer instanceof L.TileLayer) {
-                    map.removeLayer(layer);
-                }
-            });
-            
-            // Añadir nueva capa
-            mapLayers[type].addTo(map);
-            currentMapType = type;
-            
-            // Actualizar texto
-            document.getElementById('currentMapText').textContent = getMapName(type);
-            
-            // Mostrar mensaje
-            showToast(`Mapa cambiado a: ${getMapName(type)}`, 'info');
-            
-            // Si estamos trackeando, redibujar ruta
-            if (routePolyline) {
-                routePolyline.addTo(map);
-            }
-            
-            // Si hay marcador, mantenerlo
-            if (userMarker) {
-                userMarker.addTo(map);
-            }
-        }
-
-        function getMapName(type) {
-            const names = {
-                'street': 'Callejero',
-                'satellite': 'Satélite',
-                'topographic': 'Topográfico',
-                'dark': 'Oscuro',
-                'light': 'Claro',
-                'cycle': 'Ciclismo'
-            };
-            return names[type] || type;
-        }
-
-        function centerMapOnUser() {
-            if (currentPosition) {
-                map.setView([currentPosition.lat, currentPosition.lng], 16);
-                showToast('Mapa centrado en tu ubicación', 'success');
-            } else {
-                showToast('Primero obtén tu ubicación', 'warning');
-            }
-        }
-
-        // ============================================
-        // GPS Y SEGUIMIENTO (MANTENIDO)
-        // ============================================
         function requestGPSPermissions() {
             return new Promise((resolve, reject) => {
                 if (!navigator.geolocation) {
@@ -1173,7 +1218,7 @@
 
         function getInitialLocation() {
             return new Promise((resolve, reject) => {
-                updateGPSStatus('obteniendo_ubicacion', 'Obteniendo tu ubicación...');
+                updateGPSStatus('obteniendo_ubicacion', 'Obteniendo ubicación...');
                 
                 navigator.geolocation.getCurrentPosition(
                     (position) => {
@@ -1187,6 +1232,95 @@
                     { enableHighAccuracy: true, timeout: 15000 }
                 );
             });
+        }
+
+        // ============================================
+        // SEGUIMIENTO DE CARRERA CON PERSISTENCIA
+        // ============================================
+        function startTracking() {
+            if (!currentPosition) {
+                showToast('Primero obtén tu ubicación actual', 'warning');
+                return;
+            }
+            
+            console.log('Iniciando seguimiento con persistencia...');
+            
+            isTracking = true;
+            startTime = new Date();
+            totalDistance = 0;
+            elevationGain = 0;
+            maxSpeed = 0;
+            positions = [currentPosition];
+            startPosition = { ...currentPosition };
+            
+            // Iniciar temporizador
+            timerInterval = setInterval(updateTimer, 1000);
+            
+            // Iniciar seguimiento GPS
+            watchId = navigator.geolocation.watchPosition(
+                (position) => handleNewPosition(position),
+                (error) => handleGPSError(error),
+                { enableHighAccuracy: true, maximumAge: 0, timeout: 10000 }
+            );
+            
+            // Iniciar guardado automático
+            startAutoSave();
+            
+            // Guardar inmediatamente
+            saveSessionData();
+            
+            // Actualizar UI
+            updateUIForTracking();
+            
+            showToast('¡Carrera iniciada! Los datos se guardan automáticamente.', 'success');
+            updateGPSStatus('grabando', 'Grabando con persistencia...');
+        }
+
+        function stopTracking() {
+            console.log('Deteniendo seguimiento y guardando...');
+            
+            isTracking = false;
+            
+            // Detener temporizador
+            clearInterval(timerInterval);
+            
+            // Detener seguimiento GPS
+            if (watchId !== null) {
+                navigator.geolocation.clearWatch(watchId);
+                watchId = null;
+            }
+            
+            // Detener guardado automático
+            stopAutoSave();
+            
+            // Guardar datos finales
+            saveSessionData();
+            
+            // Archivar sesión
+            archiveSession();
+            
+            // Actualizar UI
+            updateUIForStopped();
+            
+            showToast('Carrera finalizada y guardada.', 'success');
+            updateGPSStatus('finalizado', 'Sesión guardada');
+        }
+
+        function resetTracking() {
+            if (isTracking) {
+                if (!confirm('¿Estás seguro? Se perderá el progreso no guardado.')) {
+                    return;
+                }
+                stopTracking();
+            }
+            
+            // Limpiar datos persistentes
+            clearSessionData();
+            
+            // Inicializar nueva sesión
+            initializeNewSession();
+            
+            showToast('Todo reiniciado y datos eliminados', 'info');
         }
 
         function handleNewPosition(position, isInitial = false) {
@@ -1224,21 +1358,65 @@
                     }
                 }
                 positions.push(currentPosition);
+                
+                // Guardar automáticamente cada 10 posiciones
+                if (positions.length % 10 === 0) {
+                    saveSessionData();
+                }
             }
             
             updateMapWithPosition(currentPosition, isInitial);
             updateGPSDisplay(coords);
             updateStatsDisplay();
-            updateGPSStatus('gps_activo', 'GPS activo y funcionando');
+            updateSessionInfo();
             
-            if (!isTracking) {
+            if (!isTracking && !isInitial) {
                 document.getElementById('startBtn').disabled = false;
             }
             
-            // Habilitar botón de video si hay suficientes posiciones
-            if (positions.length > 10) {
-                document.getElementById('videoBtn').disabled = false;
+            updateGPSStatus('gps_activo', 'GPS activo');
+        }
+
+        // ============================================
+        // FUNCIONES AUXILIARES
+        // ============================================
+        function updateUIForTracking() {
+            document.getElementById('startBtn').disabled = true;
+            document.getElementById('stopBtn').disabled = false;
+            document.getElementById('videoBtn').disabled = true;
+            document.getElementById('startPoint').style.display = 'flex';
+            document.getElementById('sessionState').textContent = 'Activa';
+            document.getElementById('sessionState').style.color = '#4CAF50';
+        }
+
+        function updateUIForStopped() {
+            document.getElementById('startBtn').disabled = false;
+            document.getElementById('stopBtn').disabled = true;
+            document.getElementById('videoBtn').disabled = positions.length < 10;
+            document.getElementById('sessionState').textContent = 'Completada';
+            document.getElementById('sessionState').style.color = '#FF6B35';
+        }
+
+        function updateUIForReadyState() {
+            document.getElementById('startBtn').disabled = false;
+            document.getElementById('sessionState').textContent = 'Inactiva';
+            document.getElementById('sessionState').style.color = '#6C757D';
+        }
+
+        function updateSessionInfo() {
+            // Tiempo de inicio
+            if (startTime) {
+                document.getElementById('sessionStart').textContent = 
+                    startTime.toLocaleTimeString([], {hour: '2-digit', minute:'2-digit'});
+            } else {
+                document.getElementById('sessionStart').textContent = '--:--';
             }
+            
+            // Número de posiciones
+            document.getElementById('sessionPositions').textContent = positions.length;
+            
+            // Último guardado
+            updateLastSaveDisplay();
         }
 
         function updateMapWithPosition(position, isInitial = false) {
@@ -1270,508 +1448,25 @@
             }
             
             if (isInitial) {
-                showToast('Ubicación obtenida correctamente', 'success');
-                updateGPSStatus('listo_para_iniciar', 'Listo para iniciar carrera');
+                showToast('Ubicación obtenida', 'success');
+                updateGPSStatus('listo_para_iniciar', 'Listo para iniciar');
+            }
+        }
+
+        function updateStartPointMarker() {
+            if (startPosition && map) {
+                L.marker([startPosition.lat, startPosition.lng], {
+                    icon: L.divIcon({
+                        className: 'start-marker',
+                        html: '<div style="background: #4CAF50; width: 20px; height: 20px; border-radius: 50%; border: 3px solid white; box-shadow: 0 0 10px rgba(76,175,80,0.8);"></div>',
+                        iconSize: [20, 20]
+                    })
+                }).addTo(map).bindPopup('Punto de inicio');
             }
         }
 
         // ============================================
-        // CONTROL DE CARRERA
-        // ============================================
-        function startTracking() {
-            if (!currentPosition) {
-                showToast('Primero obtén tu ubicación actual', 'warning');
-                return;
-            }
-            
-            isTracking = true;
-            startTime = new Date();
-            totalDistance = 0;
-            elevationGain = 0;
-            maxSpeed = 0;
-            positions = [currentPosition];
-            
-            timerInterval = setInterval(updateTimer, 1000);
-            
-            watchId = navigator.geolocation.watchPosition(
-                (position) => handleNewPosition(position),
-                (error) => handleGPSError(error),
-                { enableHighAccuracy: true, maximumAge: 0, timeout: 10000 }
-            );
-            
-            document.getElementById('startBtn').disabled = true;
-            document.getElementById('stopBtn').disabled = false;
-            document.getElementById('videoBtn').disabled = true;
-            document.getElementById('startPoint').style.display = 'flex';
-            
-            updateStartPointMarker();
-            showToast('¡Carrera iniciada! Grabando tu recorrido...', 'success');
-            updateGPSStatus('grabando', 'Grabando recorrido...');
-        }
-
-        function stopTracking() {
-            isTracking = false;
-            clearInterval(timerInterval);
-            
-            if (watchId !== null) {
-                navigator.geolocation.clearWatch(watchId);
-                watchId = null;
-            }
-            
-            document.getElementById('startBtn').disabled = false;
-            document.getElementById('stopBtn').disabled = true;
-            
-            // Habilitar video si hay suficientes datos
-            if (positions.length > 10) {
-                document.getElementById('videoBtn').disabled = false;
-                showToast('Carrera finalizada. ¡Ahora puedes generar un video!', 'success');
-            } else {
-                showToast('Carrera finalizada. Recorrido muy corto para video.', 'warning');
-            }
-            
-            updateGPSStatus('finalizado', 'Carrera finalizada');
-        }
-
-        function resetTracking() {
-            if (isTracking) stopTracking();
-            
-            startTime = null;
-            totalDistance = 0;
-            elevationGain = 0;
-            maxSpeed = 0;
-            positions = [];
-            startPosition = null;
-            
-            if (routePolyline) {
-                map.removeLayer(routePolyline);
-                routePolyline = null;
-            }
-            
-            document.getElementById('distance').textContent = '0.00';
-            document.getElementById('pace').textContent = '--:--';
-            document.getElementById('time').textContent = '00:00:00';
-            document.getElementById('elevation').textContent = '+0';
-            document.getElementById('speed').textContent = '0.0';
-            document.getElementById('calories').textContent = '0';
-            document.getElementById('videoBtn').disabled = true;
-            document.getElementById('startPoint').style.display = 'none';
-            document.getElementById('videoOptions').style.display = 'none';
-            
-            showToast('Todo reiniciado', 'info');
-        }
-
-        // ============================================
-        // GENERACIÓN DE VIDEO MEJORADA
-        // ============================================
-        function setupVideoOptions() {
-            // Botones de orientación
-            document.querySelectorAll('.orientation-btn').forEach(btn => {
-                btn.addEventListener('click', function() {
-                    document.querySelectorAll('.orientation-btn').forEach(b => b.classList.remove('active'));
-                    this.classList.add('active');
-                    videoOrientation = this.dataset.orientation;
-                });
-            });
-            
-            // Botones de calidad
-            document.querySelectorAll('.quality-btn[data-quality]').forEach(btn => {
-                btn.addEventListener('click', function() {
-                    document.querySelectorAll('.quality-btn[data-quality]').forEach(b => b.classList.remove('active'));
-                    this.classList.add('active');
-                    videoQuality = this.dataset.quality;
-                });
-            });
-            
-            // Botones de tipo de mapa para video
-            document.querySelectorAll('.quality-btn[data-map]').forEach(btn => {
-                btn.addEventListener('click', function() {
-                    document.querySelectorAll('.quality-btn[data-map]').forEach(b => b.classList.remove('active'));
-                    this.classList.add('active');
-                    videoMapType = this.dataset.map;
-                });
-            });
-            
-            // Botón para mostrar opciones de video
-            document.getElementById('videoBtn').addEventListener('click', () => {
-                const options = document.getElementById('videoOptions');
-                options.style.display = options.style.display === 'none' ? 'block' : 'none';
-            });
-            
-            // Botón para generar video
-            document.getElementById('generateVideoBtn').addEventListener('click', generateVideo);
-        }
-
-        async function generateVideo() {
-            if (positions.length < 10) {
-                showToast('Necesitas al menos 10 posiciones para generar un video', 'warning');
-                return;
-            }
-
-            // Mostrar modal de generación
-            document.getElementById('generatingModal').style.display = 'flex';
-            
-            try {
-                // Obtener configuración
-                const showStats = document.getElementById('showStats').checked;
-                const showRoute = document.getElementById('showRoute').checked;
-                const showSpeed = document.getElementById('showSpeed').checked;
-                
-                // Simular generación de video
-                await simulateVideoGeneration();
-                
-                // Crear video real (simulado por ahora)
-                const videoBlob = await createVideoPreview(showStats, showRoute, showSpeed);
-                
-                // Mostrar resultado
-                showVideoResult(videoBlob);
-                
-            } catch (error) {
-                console.error('Error generando video:', error);
-                showToast('Error al generar video: ' + error.message, 'error');
-            } finally {
-                document.getElementById('generatingModal').style.display = 'none';
-            }
-        }
-
-        async function simulateVideoGeneration() {
-            const steps = [
-                'Preparando datos del recorrido...',
-                `Configurando mapa ${getMapName(videoMapType)}...`,
-                `Generando animación en ${videoOrientation === 'horizontal' ? 'horizontal' : 'vertical'}...`,
-                'Renderizando vista del recorrido...',
-                `Codificando video en ${videoQuality}...`,
-                'Añadiendo estadísticas y efectos...',
-                'Optimizando para reproducción...',
-                'Finalizando video...'
-            ];
-            
-            for (let i = 0; i < steps.length; i++) {
-                updateGenerationProgress(steps[i], (i + 1) * (100 / steps.length));
-                await sleep(500);
-            }
-        }
-
-        async function createVideoPreview(showStats, showRoute, showSpeed) {
-            // Crear canvas temporal para el video
-            const canvas = document.createElement('canvas');
-            const ctx = canvas.getContext('2d');
-            
-            // Configurar tamaño según orientación y calidad
-            const dimensions = getVideoDimensions();
-            canvas.width = dimensions.width;
-            canvas.height = dimensions.height;
-            
-            // Crear frames del video
-            const frames = 60; // 2 segundos a 30fps
-            const framesData = [];
-            
-            for (let i = 0; i < frames; i++) {
-                const progress = i / frames;
-                renderVideoFrame(ctx, canvas, progress, showStats, showRoute, showSpeed);
-                framesData.push(canvas.toDataURL('image/jpeg', 0.9));
-                updateGenerationProgress(`Renderizando frame ${i+1}/${frames}...`, 80 + (i/frames)*20);
-                await sleep(10);
-            }
-            
-            // Crear video a partir de los frames
-            const videoBlob = await createVideoFromFrames(framesData, dimensions);
-            
-            return videoBlob;
-        }
-
-        function getVideoDimensions() {
-            switch(videoQuality) {
-                case '1080p':
-                    return videoOrientation === 'horizontal' 
-                        ? { width: 1920, height: 1080 }
-                        : { width: 1080, height: 1920 };
-                case '720p':
-                    return videoOrientation === 'horizontal'
-                        ? { width: 1280, height: 720 }
-                        : { width: 720, height: 1280 };
-                case '480p':
-                default:
-                    return videoOrientation === 'horizontal'
-                        ? { width: 854, height: 480 }
-                        : { width: 480, height: 854 };
-            }
-        }
-
-        function renderVideoFrame(ctx, canvas, progress, showStats, showRoute, showSpeed) {
-            // Fondo según tipo de mapa seleccionado para video
-            const mapColors = {
-                'satellite': '#16213E',
-                'topographic': '#2E4C3D',
-                'dark': '#1A1A2E',
-                'street': '#E8E8E8',
-                'light': '#F5F5F5',
-                'cycle': '#D4E6F1'
-            };
-            
-            ctx.fillStyle = mapColors[videoMapType] || '#1A1A2E';
-            ctx.fillRect(0, 0, canvas.width, canvas.height);
-            
-            // Calcular posición en el recorrido
-            const posIndex = Math.floor(progress * (positions.length - 1));
-            const currentPos = positions[posIndex];
-            
-            // Dibujar mapa simulado según tipo
-            drawMapFrame(ctx, canvas, currentPos, progress, videoMapType, showRoute);
-            
-            // Dibujar estadísticas si están habilitadas
-            if (showStats) {
-                drawStatsOverlay(ctx, canvas, currentPos, progress);
-            }
-            
-            // Dibujar velocidad si está habilitada
-            if (showSpeed && currentPos.speed > 0) {
-                ctx.fillStyle = '#FFFFFF';
-                ctx.font = 'bold 24px Arial';
-                ctx.textAlign = 'center';
-                ctx.fillText(`${(currentPos.speed * 3.6).toFixed(1)} km/h`, canvas.width / 2, 50);
-            }
-            
-            // Añadir marca de agua con tipo de mapa
-            ctx.fillStyle = 'rgba(255, 255, 255, 0.1)';
-            ctx.font = 'bold 20px Arial';
-            ctx.textAlign = 'right';
-            ctx.fillText(`TrackRun Pro - ${getMapName(videoMapType)}`, canvas.width - 20, canvas.height - 20);
-        }
-
-        function drawMapFrame(ctx, canvas, position, progress, mapType, showRoute) {
-            const centerX = canvas.width / 2;
-            const centerY = canvas.height / 2;
-            
-            // Dibujar ruta completa si está habilitada
-            if (showRoute && positions.length > 1) {
-                ctx.strokeStyle = '#FF6B35';
-                ctx.lineWidth = 4;
-                ctx.beginPath();
-                
-                const startIndex = Math.max(0, Math.floor(progress * positions.length) - 50);
-                const endIndex = Math.floor(progress * positions.length);
-                
-                for (let i = startIndex; i <= endIndex; i++) {
-                    const pos = positions[i];
-                    const x = 50 + ((i - startIndex) / (endIndex - startIndex)) * (canvas.width - 100);
-                    const y = canvas.height - 150 - (pos.altitude / 10);
-                    
-                    if (i === startIndex) {
-                        ctx.moveTo(x, y);
-                    } else {
-                        ctx.lineTo(x, y);
-                    }
-                }
-                ctx.stroke();
-            }
-            
-            // Dibujar punto actual
-            ctx.fillStyle = '#00A8E8';
-            ctx.beginPath();
-            ctx.arc(centerX, centerY, 15, 0, Math.PI * 2);
-            ctx.fill();
-            
-            // Dibujar borde según tipo de mapa
-            ctx.strokeStyle = mapType === 'dark' ? '#FFFFFF' : '#000000';
-            ctx.lineWidth = 2;
-            ctx.stroke();
-        }
-
-        function drawStatsOverlay(ctx, canvas, position, progress) {
-            const statsY = canvas.height - 200;
-            
-            // Fondo semi-transparente
-            ctx.fillStyle = 'rgba(26, 26, 46, 0.9)';
-            ctx.fillRect(50, statsY, canvas.width - 100, 140);
-            
-            // Estadísticas
-            ctx.fillStyle = '#FFFFFF';
-            ctx.font = 'bold 18px Arial';
-            ctx.textAlign = 'left';
-            
-            const stats = [
-                `Distancia: ${(totalDistance * progress).toFixed(2)} km`,
-                `Ritmo: ${calculatePace(progress)} min/km`,
-                `Tiempo: ${formatTime(progress)}`,
-                `Desnivel: +${Math.round(elevationGain * progress)} m`
-            ];
-            
-            stats.forEach((stat, i) => {
-                ctx.fillText(stat, 70, statsY + 40 + (i * 30));
-            });
-            
-            // Barra de progreso
-            ctx.fillStyle = '#FF6B35';
-            ctx.fillRect(70, statsY + 120, (canvas.width - 140) * progress, 8);
-        }
-
-        function calculatePace(progress) {
-            if (progress === 0) return '--:--';
-            
-            const elapsedTime = progress * ((new Date() - startTime) / 60000);
-            const distance = totalDistance * progress;
-            const pace = elapsedTime / distance;
-            
-            const minutes = Math.floor(pace);
-            const seconds = Math.floor((pace - minutes) * 60);
-            return `${minutes}:${seconds.toString().padStart(2, '0')}`;
-        }
-
-        function formatTime(progress) {
-            if (!startTime) return '00:00:00';
-            
-            const elapsedSeconds = progress * ((new Date() - startTime) / 1000);
-            const hours = Math.floor(elapsedSeconds / 3600);
-            const minutes = Math.floor((elapsedSeconds % 3600) / 60);
-            const seconds = Math.floor(elapsedSeconds % 60);
-            
-            return `${hours.toString().padStart(2, '0')}:${minutes.toString().padStart(2, '0')}:${seconds.toString().padStart(2, '0')}`;
-        }
-
-        async function createVideoFromFrames(framesData, dimensions) {
-            // En una implementación real, aquí usaríamos FFmpeg o MediaRecorder
-            // Por ahora, simulamos creando un video placeholder
-            
-            return new Promise((resolve) => {
-                const canvas = document.createElement('canvas');
-                canvas.width = dimensions.width;
-                canvas.height = dimensions.height;
-                const ctx = canvas.getContext('2d');
-                
-                // Dibujar frame de presentación
-                ctx.fillStyle = '#1A1A2E';
-                ctx.fillRect(0, 0, canvas.width, canvas.height);
-                
-                // Título
-                ctx.fillStyle = '#FFFFFF';
-                ctx.font = 'bold 48px Arial';
-                ctx.textAlign = 'center';
-                ctx.fillText('VIDEO DEL RECORRIDO', canvas.width/2, canvas.height/2 - 100);
-                
-                // Icono del mapa seleccionado
-                ctx.font = '72px FontAwesome';
-                ctx.fillText(getMapIcon(videoMapType), canvas.width/2, canvas.height/2 - 10);
-                
-                // Detalles
-                ctx.font = '24px Arial';
-                ctx.fillText(`Mapa: ${getMapName(videoMapType)}`, canvas.width/2, canvas.height/2 + 60);
-                ctx.fillText(`Orientación: ${videoOrientation === 'horizontal' ? 'Horizontal' : 'Vertical'}`, canvas.width/2, canvas.height/2 + 100);
-                ctx.fillText(`Calidad: ${videoQuality}`, canvas.width/2, canvas.height/2 + 140);
-                ctx.fillText(`Duración: 2 segundos (demo)`, canvas.width/2, canvas.height/2 + 180);
-                
-                // Nota
-                ctx.fillStyle = '#FF6B35';
-                ctx.font = '18px Arial';
-                ctx.fillText('(Video generado por TrackRun Pro)', canvas.width/2, canvas.height/2 + 240);
-                
-                // Convertir a blob
-                canvas.toBlob((blob) => {
-                    resolve(blob);
-                }, 'video/mp4');
-            });
-        }
-
-        function getMapIcon(mapType) {
-            const icons = {
-                'street': '🗺️',
-                'satellite': '🛰️',
-                'topographic': '🏔️',
-                'dark': '🌙',
-                'light': '☀️',
-                'cycle': '🚴'
-            };
-            return icons[mapType] || '🗺️';
-        }
-
-        function showVideoResult(videoBlob) {
-            const videoUrl = URL.createObjectURL(videoBlob);
-            const date = new Date();
-            const filename = `TrackRun_${getMapName(videoMapType)}_${videoOrientation}_${videoQuality}_${date.getFullYear()}-${(date.getMonth()+1).toString().padStart(2,'0')}-${date.getDate().toString().padStart(2,'0')}.mp4`;
-            
-            const previewContent = `
-                <div class="video-preview-container">
-                    <div style="background: #000; padding: 40px; text-align: center; border-radius: 8px;">
-                        <div style="font-size: 4rem; margin-bottom: 20px;">
-                            ${getMapIcon(videoMapType)}
-                        </div>
-                        <h3 style="color: white; margin-bottom: 10px;">Video Generado</h3>
-                        <p style="color: #aaa; margin-bottom: 20px;">
-                            Tu video de recorrido está listo para descargar
-                        </p>
-                        <div style="background: rgba(255,255,255,0.1); padding: 15px; border-radius: 8px; text-align: left; margin-bottom: 20px;">
-                            <p><strong>Detalles del video:</strong></p>
-                            <p>• Tipo de mapa: ${getMapName(videoMapType)}</p>
-                            <p>• Orientación: ${videoOrientation === 'horizontal' ? 'Horizontal' : 'Vertical'}</p>
-                            <p>• Calidad: ${videoQuality}</p>
-                            <p>• Resolución: ${getVideoDimensions().width}x${getVideoDimensions().height}</p>
-                            <p>• Duración: 2 segundos (demo)</p>
-                            <p>• Formato: MP4 (compatible universal)</p>
-                        </div>
-                    </div>
-                </div>
-                <div class="video-controls">
-                    <button class="video-control-btn primary" id="downloadVideoBtn">
-                        <i class="fas fa-download"></i> Descargar Video
-                    </button>
-                    <button class="video-control-btn" id="shareVideoBtn">
-                        <i class="fas fa-share"></i> Compartir
-                    </button>
-                    <button class="video-control-btn" id="closeVideoBtn">
-                        <i class="fas fa-times"></i> Cerrar
-                    </button>
-                </div>
-            `;
-            
-            document.getElementById('videoPreviewContent').innerHTML = previewContent;
-            document.getElementById('videoModal').style.display = 'flex';
-            
-            // Configurar botones
-            document.getElementById('downloadVideoBtn').addEventListener('click', () => {
-                downloadVideo(videoBlob, filename);
-            });
-            
-            document.getElementById('shareVideoBtn').addEventListener('click', () => {
-                shareVideo(videoBlob, filename);
-            });
-            
-            document.getElementById('closeVideoBtn').addEventListener('click', () => {
-                document.getElementById('videoModal').style.display = 'none';
-            });
-        }
-
-        function downloadVideo(blob, filename) {
-            const url = URL.createObjectURL(blob);
-            const a = document.createElement('a');
-            a.href = url;
-            a.download = filename;
-            document.body.appendChild(a);
-            a.click();
-            document.body.removeChild(a);
-            URL.revokeObjectURL(url);
-            
-            showToast(`Video "${filename}" descargado`, 'success');
-        }
-
-        function shareVideo(blob, filename) {
-            if (navigator.share) {
-                const file = new File([blob], filename, { type: 'video/mp4' });
-                
-                navigator.share({
-                    files: [file],
-                    title: `Mi recorrido en ${getMapName(videoMapType)}`,
-                    text: 'Mira el video de mi recorrido generado con TrackRun Pro'
-                }).then(() => {
-                    showToast('Video compartido exitosamente', 'success');
-                }).catch(err => {
-                    showToast('Error al compartir: ' + err.message, 'error');
-                });
-            } else {
-                showToast('La función de compartir no está disponible', 'info');
-            }
-        }
-
-        // ============================================
-        // FUNCIONES AUXILIARES
+        // CÁLCULOS Y ESTADÍSTICAS
         // ============================================
         function calculateDistance(lat1, lon1, lat2, lon2) {
             const R = 6371;
@@ -1822,52 +1517,13 @@
         function updateGPSDisplay(coords) {
             document.getElementById('accuracyText').textContent = 
                 `${Math.round(coords.accuracy)} metros`;
-            document.getElementById('statusText').textContent = 
-                isTracking ? 'Grabando carrera' : 'GPS activo';
         }
 
-        function updateStartPointMarker() {
-            if (startPosition && map) {
-                L.marker([startPosition.lat, startPosition.lng], {
-                    icon: L.divIcon({
-                        className: 'start-marker',
-                        html: '<div style="background: #4CAF50; width: 20px; height: 20px; border-radius: 50%; border: 3px solid white; box-shadow: 0 0 10px rgba(76,175,80,0.8);"></div>',
-                        iconSize: [20, 20]
-                    })
-                }).addTo(map).bindPopup('Punto de inicio');
-            }
-        }
-
-        function updateGPSStatus(status, message) {
-            const indicator = document.getElementById('gpsIndicator');
-            const statusText = document.getElementById('gpsStatusText');
-            const details = document.getElementById('gpsDetails');
-            
-            statusText.textContent = message;
-            details.textContent = getStatusDetails(status);
-            
-            indicator.classList.remove('active');
-            if (status === 'gps_activo' || status === 'grabando' || status === 'listo_para_iniciar') {
-                indicator.classList.add('active');
-            }
-        }
-
-        function getStatusDetails(status) {
-            const details = {
-                'mapa_listo': `Mapa ${getMapName(currentMapType)} cargado`,
-                'permisos_concedidos': 'Permisos concedidos. Obteniendo ubicación...',
-                'obteniendo_ubicacion': 'Buscando señal GPS...',
-                'gps_activo': `GPS activo | Mapa: ${getMapName(currentMapType)}`,
-                'listo_para_iniciar': 'Presiona "INICIAR CARRERA" para comenzar',
-                'grabando': 'Grabando recorrido en tiempo real',
-                'finalizado': 'Carrera completada',
-                'error': 'Error en el sistema GPS'
-            };
-            return details[status] || 'Estado desconocido';
-        }
-
+        // ============================================
+        // MANEJO DE ERRORES
+        // ============================================
         function handleGPSError(error) {
-            let message = 'Error de GPS: ';
+            let message = 'Error GPS: ';
             switch(error.code) {
                 case error.PERMISSION_DENIED:
                     message += 'Permisos denegados';
@@ -1885,33 +1541,65 @@
             showToast(message, 'error');
         }
 
-        function updateUIForReadyState() {
-            document.getElementById('startBtn').disabled = false;
-            document.getElementById('locateBtn').disabled = false;
-        }
-
+        // ============================================
+        // EVENT LISTENERS
+        // ============================================
         function setupEventListeners() {
+            // Botones principales
             document.getElementById('startBtn').addEventListener('click', startTracking);
             document.getElementById('stopBtn').addEventListener('click', stopTracking);
             document.getElementById('resetBtn').addEventListener('click', resetTracking);
-            document.getElementById('locateBtn').addEventListener('click', () => {
-                getInitialLocation().catch(() => {
-                    showToast('No se pudo obtener ubicación', 'error');
-                });
+            
+            // Botón de guardado manual
+            document.getElementById('saveSessionBtn').addEventListener('click', () => {
+                saveSessionData();
+                showToast('Sesión guardada manualmente', 'success');
             });
-            document.getElementById('closeModal').addEventListener('click', () => {
-                document.getElementById('videoModal').style.display = 'none';
+            
+            // Botón de centrar mapa
+            document.getElementById('centerMapBtn').addEventListener('click', () => {
+                if (currentPosition) {
+                    map.setView([currentPosition.lat, currentPosition.lng], 16);
+                    showToast('Mapa centrado', 'info');
+                }
+            });
+            
+            // Guardar antes de cerrar/recargar
+            window.addEventListener('beforeunload', (e) => {
+                if (isTracking || positions.length > 0) {
+                    saveSessionData();
+                    
+                    // Mensaje de advertencia
+                    if (isTracking) {
+                        e.preventDefault();
+                        e.returnValue = 'Tienes una carrera en curso. ¿Estás seguro de querer salir?';
+                    }
+                }
+            });
+            
+            // Guardar también cuando la página pierde visibilidad
+            document.addEventListener('visibilitychange', () => {
+                if (document.hidden && (isTracking || positions.length > 0)) {
+                    saveSessionData();
+                    console.log('Datos guardados al minimizar la app');
+                }
             });
         }
 
-        function updateGenerationProgress(step, progress) {
-            document.getElementById('generationStep').textContent = step;
-            document.getElementById('generationProgress').style.width = progress + '%';
-            document.getElementById('progressText').textContent = Math.round(progress) + '% completado';
-        }
-
-        function sleep(ms) {
-            return new Promise(resolve => setTimeout(resolve, ms));
+        // ============================================
+        // UTILIDADES
+        // ============================================
+        function updateGPSStatus(status, message) {
+            const indicator = document.getElementById('gpsIndicator');
+            const statusText = document.getElementById('gpsStatusText');
+            const details = document.getElementById('gpsDetails');
+            
+            statusText.textContent = message;
+            
+            indicator.classList.remove('active');
+            if (status === 'gps_activo' || status === 'grabando' || status === 'listo_para_iniciar') {
+                indicator.classList.add('active');
+            }
         }
 
         function showToast(message, type = 'info') {
@@ -1936,16 +1624,9 @@
             setTimeout(() => {
                 toast.style.display = 'none';
             }, 4000);
+            
+            console.log(`Toast [${type}]: ${message}`);
         }
-
-        // Spinner animation
-        const style = document.createElement('style');
-        style.textContent = `
-            @keyframes spin {
-                to { transform: rotate(360deg); }
-            }
-        `;
-        document.head.appendChild(style);
 
     </script>
 </body>
