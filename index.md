@@ -3,10 +3,9 @@
 <head>
     <meta charset="UTF-8">
     <meta name="viewport" content="width=device-width, initial-scale=1.0, maximum-scale=1.0, user-scalable=no">
-    <title>TrackRun Pro - Seguimiento GPS para Carreras</title>
+    <title>TrackRun Pro - GPS Funcional</title>
     <link rel="stylesheet" href="https://cdnjs.cloudflare.com/ajax/libs/font-awesome/6.4.0/css/all.min.css">
     <link rel="stylesheet" href="https://unpkg.com/leaflet@1.9.4/dist/leaflet.css" />
-    <link rel="stylesheet" href="https://unpkg.com/leaflet-control-geocoder/dist/Control.Geocoder.css" />
     <style>
         :root {
             --primary: #FF6B35;
@@ -90,31 +89,6 @@
             color: var(--gray);
         }
 
-        .header-controls {
-            display: flex;
-            gap: 10px;
-        }
-
-        .icon-btn {
-            width: 40px;
-            height: 40px;
-            border-radius: 12px;
-            background: rgba(255, 255, 255, 0.1);
-            border: none;
-            color: white;
-            display: flex;
-            align-items: center;
-            justify-content: center;
-            font-size: 1.2rem;
-            cursor: pointer;
-            transition: all 0.3s ease;
-        }
-
-        .icon-btn:hover {
-            background: rgba(255, 255, 255, 0.2);
-            transform: translateY(-2px);
-        }
-
         /* Main Content */
         .main-content {
             display: flex;
@@ -148,33 +122,37 @@
             min-height: 400px;
         }
 
-        .map-controls {
+        /* GPS Overlay */
+        .gps-overlay {
+            position: absolute;
+            top: 15px;
+            left: 15px;
+            z-index: 1000;
+            background: rgba(0, 0, 0, 0.8);
+            padding: 15px;
+            border-radius: 12px;
+            backdrop-filter: blur(5px);
+            max-width: 300px;
+        }
+
+        .gps-status {
             display: flex;
-            justify-content: space-between;
-            background: rgba(26, 26, 46, 0.8);
-            padding: 12px 20px;
-            border-radius: var(--border-radius);
-            backdrop-filter: blur(10px);
+            align-items: center;
+            gap: 12px;
+            margin-bottom: 10px;
         }
 
-        .map-type-selector {
-            display: flex;
-            gap: 8px;
+        .gps-indicator {
+            width: 12px;
+            height: 12px;
+            border-radius: 50%;
+            background: var(--danger);
+            animation: pulse 2s infinite;
         }
 
-        .map-type-btn {
-            padding: 8px 16px;
-            background: rgba(255, 255, 255, 0.1);
-            border: none;
-            border-radius: 10px;
-            color: white;
-            cursor: pointer;
-            font-size: 0.9rem;
-            transition: all 0.3s ease;
-        }
-
-        .map-type-btn.active {
-            background: var(--primary);
+        .gps-indicator.active {
+            background: var(--success);
+            box-shadow: 0 0 15px var(--success);
         }
 
         /* Stats Section */
@@ -254,43 +232,6 @@
             gap: 20px;
         }
 
-        .gps-status {
-            display: flex;
-            align-items: center;
-            gap: 12px;
-            padding: 15px;
-            background: rgba(255, 255, 255, 0.05);
-            border-radius: 12px;
-            margin-bottom: 10px;
-        }
-
-        .gps-indicator {
-            width: 12px;
-            height: 12px;
-            border-radius: 50%;
-            background: var(--danger);
-            animation: pulse 2s infinite;
-        }
-
-        .gps-indicator.active {
-            background: var(--success);
-            box-shadow: 0 0 15px var(--success);
-        }
-
-        .gps-info {
-            flex: 1;
-        }
-
-        .gps-info h3 {
-            font-size: 1rem;
-            margin-bottom: 4px;
-        }
-
-        .gps-info p {
-            font-size: 0.85rem;
-            color: var(--gray);
-        }
-
         .control-buttons {
             display: flex;
             flex-direction: column;
@@ -337,261 +278,6 @@
             box-shadow: 0 8px 25px rgba(0, 0, 0, 0.2);
         }
 
-        /* Video Export */
-        .video-export {
-            background: rgba(26, 26, 46, 0.8);
-            backdrop-filter: blur(10px);
-            border-radius: var(--border-radius);
-            padding: 25px;
-            box-shadow: var(--shadow);
-            margin-top: 15px;
-        }
-
-        .video-quality-selector {
-            display: grid;
-            grid-template-columns: repeat(3, 1fr);
-            gap: 10px;
-            margin: 20px 0;
-        }
-
-        .quality-option {
-            padding: 15px;
-            background: rgba(255, 255, 255, 0.05);
-            border-radius: 12px;
-            text-align: center;
-            cursor: pointer;
-            transition: all 0.3s ease;
-            border: 2px solid transparent;
-        }
-
-        .quality-option:hover {
-            background: rgba(255, 255, 255, 0.1);
-        }
-
-        .quality-option.active {
-            background: rgba(0, 168, 232, 0.2);
-            border-color: var(--secondary);
-        }
-
-        .quality-option i {
-            font-size: 1.5rem;
-            margin-bottom: 8px;
-            color: var(--secondary);
-        }
-
-        .export-btn {
-            width: 100%;
-            padding: 18px;
-            background: linear-gradient(135deg, var(--secondary), #0097CC);
-            border: none;
-            border-radius: 14px;
-            color: white;
-            font-size: 1.1rem;
-            font-weight: 700;
-            cursor: pointer;
-            display: flex;
-            align-items: center;
-            justify-content: center;
-            gap: 12px;
-            transition: all 0.3s ease;
-        }
-
-        .export-btn:hover:not(:disabled) {
-            transform: translateY(-3px);
-            box-shadow: 0 8px 25px rgba(0, 168, 232, 0.3);
-        }
-
-        .export-btn:disabled {
-            opacity: 0.5;
-            cursor: not-allowed;
-        }
-
-        /* Session Info */
-        .session-info {
-            background: rgba(26, 26, 46, 0.8);
-            backdrop-filter: blur(10px);
-            border-radius: var(--border-radius);
-            padding: 25px;
-            box-shadow: var(--shadow);
-            margin-top: 20px;
-        }
-
-        .session-details {
-            display: grid;
-            grid-template-columns: repeat(auto-fit, minmax(200px, 1fr));
-            gap: 15px;
-            margin-top: 15px;
-        }
-
-        .detail-item {
-            background: rgba(255, 255, 255, 0.05);
-            padding: 15px;
-            border-radius: 12px;
-        }
-
-        .detail-label {
-            font-size: 0.85rem;
-            color: var(--gray);
-            margin-bottom: 5px;
-        }
-
-        .detail-value {
-            font-size: 1.2rem;
-            font-weight: 700;
-            color: white;
-        }
-
-        /* Footer */
-        .app-footer {
-            background: rgba(26, 26, 46, 0.95);
-            padding: 20px;
-            text-align: center;
-            border-top: 1px solid rgba(255, 255, 255, 0.1);
-            margin-top: 20px;
-        }
-
-        .footer-text {
-            color: var(--gray);
-            font-size: 0.9rem;
-            line-height: 1.5;
-        }
-
-        /* Animations */
-        @keyframes pulse {
-            0% { opacity: 1; }
-            50% { opacity: 0.5; }
-            100% { opacity: 1; }
-        }
-
-        @keyframes slideIn {
-            from { transform: translateY(20px); opacity: 0; }
-            to { transform: translateY(0); opacity: 1; }
-        }
-
-        /* Responsive Design */
-        @media (max-width: 768px) {
-            .main-content {
-                flex-direction: column;
-                padding: 15px;
-            }
-            
-            .stats-container {
-                grid-template-columns: repeat(2, 1fr);
-            }
-            
-            .map-type-selector {
-                flex-wrap: wrap;
-                justify-content: center;
-            }
-            
-            .video-quality-selector {
-                grid-template-columns: 1fr;
-            }
-            
-            .app-header {
-                padding: 12px 15px;
-            }
-            
-            .stat-value {
-                font-size: 1.8rem;
-            }
-        }
-
-        @media (max-width: 480px) {
-            .stats-container {
-                grid-template-columns: 1fr;
-            }
-            
-            .control-btn {
-                padding: 16px;
-                font-size: 1rem;
-            }
-            
-            .map-container {
-                min-height: 350px;
-            }
-            
-            .logo-text h1 {
-                font-size: 1.2rem;
-            }
-        }
-
-        /* Modal */
-        .modal {
-            display: none;
-            position: fixed;
-            top: 0;
-            left: 0;
-            width: 100%;
-            height: 100%;
-            background: rgba(0, 0, 0, 0.8);
-            z-index: 2000;
-            align-items: center;
-            justify-content: center;
-            animation: fadeIn 0.3s ease;
-        }
-
-        .modal-content {
-            background: var(--dark);
-            border-radius: var(--border-radius);
-            padding: 30px;
-            max-width: 500px;
-            width: 90%;
-            max-height: 80vh;
-            overflow-y: auto;
-            animation: slideIn 0.4s ease;
-            border: 1px solid rgba(255, 255, 255, 0.1);
-        }
-
-        .modal-header {
-            display: flex;
-            justify-content: space-between;
-            align-items: center;
-            margin-bottom: 20px;
-        }
-
-        .modal-title {
-            font-size: 1.5rem;
-            font-weight: 700;
-            color: white;
-        }
-
-        .close-modal {
-            background: none;
-            border: none;
-            color: var(--gray);
-            font-size: 1.5rem;
-            cursor: pointer;
-        }
-
-        @keyframes fadeIn {
-            from { opacity: 0; }
-            to { opacity: 1; }
-        }
-
-        /* Loading */
-        .loading {
-            display: flex;
-            flex-direction: column;
-            align-items: center;
-            justify-content: center;
-            padding: 40px;
-        }
-
-        .spinner {
-            width: 50px;
-            height: 50px;
-            border: 4px solid rgba(255, 255, 255, 0.1);
-            border-radius: 50%;
-            border-top-color: var(--primary);
-            animation: spin 1s linear infinite;
-            margin-bottom: 20px;
-        }
-
-        @keyframes spin {
-            to { transform: rotate(360deg); }
-        }
-
         /* Toast Notifications */
         .toast {
             position: fixed;
@@ -617,6 +303,88 @@
         .toast.warning {
             background: var(--warning);
         }
+
+        .toast.info {
+            background: var(--secondary);
+        }
+
+        /* Animations */
+        @keyframes pulse {
+            0% { opacity: 1; }
+            50% { opacity: 0.5; }
+            100% { opacity: 1; }
+        }
+
+        @keyframes slideIn {
+            from { transform: translateY(20px); opacity: 0; }
+            to { transform: translateY(0); opacity: 1; }
+        }
+
+        /* Responsive */
+        @media (max-width: 768px) {
+            .main-content {
+                flex-direction: column;
+                padding: 15px;
+            }
+            
+            .stats-container {
+                grid-template-columns: repeat(2, 1fr);
+            }
+            
+            .app-header {
+                padding: 12px 15px;
+            }
+            
+            .stat-value {
+                font-size: 1.8rem;
+            }
+        }
+
+        @media (max-width: 480px) {
+            .stats-container {
+                grid-template-columns: 1fr;
+            }
+            
+            .control-btn {
+                padding: 16px;
+                font-size: 1rem;
+            }
+            
+            .map-container {
+                min-height: 350px;
+            }
+        }
+
+        /* GPS Debug */
+        .gps-debug {
+            position: absolute;
+            bottom: 15px;
+            left: 15px;
+            background: rgba(0, 0, 0, 0.8);
+            color: white;
+            padding: 10px 15px;
+            border-radius: 8px;
+            font-size: 0.8rem;
+            z-index: 1000;
+            max-width: 250px;
+        }
+
+        /* Start Point Marker */
+        .start-point {
+            background: var(--success);
+            color: white;
+            padding: 8px 15px;
+            border-radius: 20px;
+            font-size: 0.9rem;
+            font-weight: 600;
+            display: flex;
+            align-items: center;
+            gap: 8px;
+            position: absolute;
+            top: 15px;
+            right: 15px;
+            z-index: 1000;
+        }
     </style>
 </head>
 <body>
@@ -629,16 +397,8 @@
                 </div>
                 <div class="logo-text">
                     <h1>TrackRun Pro</h1>
-                    <p>Seguimiento GPS profesional para atletas</p>
+                    <p>GPS Funcional - Inicia tu carrera ahora</p>
                 </div>
-            </div>
-            <div class="header-controls">
-                <button class="icon-btn" id="settingsBtn" title="Configuración">
-                    <i class="fas fa-cog"></i>
-                </button>
-                <button class="icon-btn" id="fullscreenBtn" title="Pantalla completa">
-                    <i class="fas fa-expand"></i>
-                </button>
             </div>
         </header>
 
@@ -648,45 +408,38 @@
             <section class="map-section">
                 <div class="map-container">
                     <div id="map"></div>
-                </div>
-                <div class="map-controls">
-                    <div class="map-type-selector">
-                        <button class="map-type-btn active" data-type="standard">
-                            <i class="fas fa-map"></i> Mapa
-                        </button>
-                        <button class="map-type-btn" data-type="satellite">
-                            <i class="fas fa-satellite"></i> Satélite
-                        </button>
-                        <button class="map-type-btn" data-type="terrain">
-                            <i class="fas fa-mountain"></i> Terreno
-                        </button>
-                        <button class="map-type-btn" data-type="hybrid">
-                            <i class="fas fa-layer-group"></i> Híbrido
-                        </button>
+                    
+                    <!-- GPS Overlay -->
+                    <div class="gps-overlay" id="gpsOverlay">
+                        <div class="gps-status">
+                            <div class="gps-indicator" id="gpsIndicator"></div>
+                            <div>
+                                <h3 id="gpsStatusText">Inicializando GPS...</h3>
+                                <p id="gpsDetails">Esperando permisos...</p>
+                            </div>
+                        </div>
+                        <div id="gpsInstructions" style="font-size: 0.9rem; color: #aaa; margin-top: 10px;">
+                            <p><i class="fas fa-info-circle"></i> Acepta los permisos de ubicación para comenzar</p>
+                        </div>
                     </div>
-                    <button class="icon-btn" id="centerMapBtn" title="Centrar en mi ubicación">
-                        <i class="fas fa-location-crosshairs"></i>
-                    </button>
+
+                    <!-- Start Point Marker -->
+                    <div class="start-point" id="startPoint" style="display: none;">
+                        <i class="fas fa-flag-checkered"></i>
+                        Punto de inicio fijado
+                    </div>
+                </div>
+
+                <!-- GPS Debug (visible solo durante desarrollo) -->
+                <div class="gps-debug" id="gpsDebug" style="display: none;">
+                    <div><strong>Estado GPS:</strong> <span id="debugStatus">Inactivo</span></div>
+                    <div><strong>Precisión:</strong> <span id="debugAccuracy">--</span></div>
+                    <div><strong>Última posición:</strong> <span id="debugPosition">--</span></div>
                 </div>
             </section>
 
             <!-- Stats and Controls Section -->
             <section class="stats-section">
-                <!-- GPS Status -->
-                <div class="gps-status">
-                    <div class="gps-indicator" id="gpsIndicator"></div>
-                    <div class="gps-info">
-                        <h3 id="gpsStatusText">Buscando señal GPS...</h3>
-                        <p id="gpsAccuracy">Precisión: -- metros</p>
-                    </div>
-                    <div class="gps-data">
-                        <div class="detail-item">
-                            <div class="detail-label">Altitud inicial</div>
-                            <div class="detail-value" id="initialAltitude">-- m</div>
-                        </div>
-                    </div>
-                </div>
-
                 <!-- Stats Cards -->
                 <div class="stats-container">
                     <div class="stat-card primary">
@@ -728,368 +481,334 @@
                             <i class="fas fa-play-circle"></i> INICIAR CARRERA
                         </button>
                         <button class="control-btn stop" id="stopBtn" disabled>
-                            <i class="fas fa-stop-circle"></i> DETENER
+                            <i class="fas fa-stop-circle"></i> DETENER CARRERA
                         </button>
                         <button class="control-btn reset" id="resetBtn">
-                            <i class="fas fa-redo"></i> REINICIAR
+                            <i class="fas fa-redo"></i> REINICIAR TODO
                         </button>
                     </div>
-                </div>
 
-                <!-- Video Export -->
-                <div class="video-export">
-                    <h3><i class="fas fa-video"></i> Exportar Recorrido en Video</h3>
-                    <p>Exporta tu entrenamiento como video profesional compatible con todos los dispositivos</p>
-                    
-                    <div class="video-quality-selector">
-                        <div class="quality-option active" data-quality="4k">
-                            <i class="fas fa-film"></i>
-                            <h4>4K Ultra HD</h4>
-                            <p>Máxima calidad (3840x2160)</p>
-                        </div>
-                        <div class="quality-option" data-quality="1080p">
-                            <i class="fas fa-hd"></i>
-                            <h4>Full HD</h4>
-                            <p>Calidad premium (1920x1080)</p>
-                        </div>
-                        <div class="quality-option" data-quality="720p">
-                            <i class="fas fa-mobile-alt"></i>
-                            <h4>HD Móvil</h4>
-                            <p>Optimizado para móvil (1280x720)</p>
+                    <!-- GPS Information -->
+                    <div style="background: rgba(255,255,255,0.05); padding: 15px; border-radius: 12px; margin-top: 15px;">
+                        <h4 style="margin-bottom: 10px; color: var(--secondary);">
+                            <i class="fas fa-satellite"></i> Información GPS
+                        </h4>
+                        <div style="font-size: 0.9rem;">
+                            <div style="display: flex; justify-content: space-between; margin-bottom: 5px;">
+                                <span>Estado:</span>
+                                <span id="statusText">Esperando GPS...</span>
+                            </div>
+                            <div style="display: flex; justify-content: space-between; margin-bottom: 5px;">
+                                <span>Precisión:</span>
+                                <span id="accuracyText">-- metros</span>
+                            </div>
+                            <div style="display: flex; justify-content: space-between;">
+                                <span>Altitud:</span>
+                                <span id="altitudeText">-- metros</span>
+                            </div>
                         </div>
                     </div>
 
-                    <div class="orientation-selector" style="margin: 15px 0;">
-                        <div style="display: flex; gap: 10px; justify-content: center;">
-                            <button class="map-type-btn active" id="landscapeBtn">
-                                <i class="fas fa-desktop"></i> Horizontal
-                            </button>
-                            <button class="map-type-btn" id="portraitBtn">
-                                <i class="fas fa-mobile-alt"></i> Vertical
-                            </button>
-                        </div>
+                    <!-- Quick Actions -->
+                    <div style="margin-top: 20px;">
+                        <button class="control-btn" id="locateBtn" style="background: rgba(0,168,232,0.2);">
+                            <i class="fas fa-location-crosshairs"></i> UBICARME AHORA
+                        </button>
                     </div>
-
-                    <button class="export-btn" id="exportBtn" disabled>
-                        <i class="fas fa-download"></i> GENERAR Y DESCARGAR VIDEO
-                    </button>
                 </div>
             </section>
         </main>
-
-        <!-- Session Info -->
-        <section class="session-info">
-            <h3><i class="fas fa-chart-line"></i> Resumen de Sesión</h3>
-            <div class="session-details">
-                <div class="detail-item">
-                    <div class="detail-label">Velocidad Máxima</div>
-                    <div class="detail-value" id="maxSpeed">0.0 km/h</div>
-                </div>
-                <div class="detail-item">
-                    <div class="detail-label">Ritmo Promedio</div>
-                    <div class="detail-value" id="avgPace">--:-- min/km</div>
-                </div>
-                <div class="detail-item">
-                    <div class="detail-label">Desnivel Total</div>
-                    <div class="detail-value" id="totalElevation">+0 m / -0 m</div>
-                </div>
-                <div class="detail-item">
-                    <div class="detail-label">Calorías/min</div>
-                    <div class="detail-value" id="caloriesPerMin">0.0</div>
-                </div>
-            </div>
-        </section>
-
-        <!-- Footer -->
-        <footer class="app-footer">
-            <div class="footer-text">
-                <p>TrackRun Pro v2.0 | GPS en tiempo real con análisis avanzado | Los datos se procesan localmente en tu dispositivo</p>
-                <p style="margin-top: 8px; font-size: 0.8rem; color: #555;">
-                    <i class="fas fa-shield-alt"></i> Privacidad garantizada - Sin envío de datos a servidores externos
-                </p>
-            </div>
-        </footer>
-    </div>
-
-    <!-- Modal for Video Preview -->
-    <div class="modal" id="videoModal">
-        <div class="modal-content">
-            <div class="modal-header">
-                <h3 class="modal-title">Vista Previa del Video</h3>
-                <button class="close-modal" id="closeModal">&times;</button>
-            </div>
-            <div id="videoPreview">
-                <!-- Video preview will be inserted here -->
-            </div>
-            <div style="text-align: center; margin-top: 20px;">
-                <button class="control-btn start" id="downloadVideoBtn">
-                    <i class="fas fa-download"></i> DESCARGAR VIDEO
-                </button>
-            </div>
-        </div>
     </div>
 
     <!-- Toast Notifications -->
     <div class="toast" id="toast" style="display: none;">
         <i class="fas fa-check-circle"></i>
-        <span id="toastMessage">Operación completada</span>
+        <span id="toastMessage">Mensaje</span>
     </div>
 
-    <!-- Leaflet and other libraries -->
+    <!-- Leaflet -->
     <script src="https://unpkg.com/leaflet@1.9.4/dist/leaflet.js"></script>
-    <script src="https://unpkg.com/leaflet-control-geocoder/dist/Control.Geocoder.js"></script>
-    <script src="https://cdn.jsdelivr.net/npm/leaflet-elevation@1.0.0/dist/leaflet-elevation.min.js"></script>
     <script>
-        // Variables globales
+        // ============================================
+        // VARIABLES GLOBALES SIMPLIFICADAS
+        // ============================================
+        let map = null;
+        let userMarker = null;
+        let routePolyline = null;
         let watchId = null;
         let isTracking = false;
         let startTime = null;
         let timerInterval = null;
-        let currentRoute = [];
+        let startPosition = null;
+        let currentPosition = null;
+        let positions = [];
         let totalDistance = 0;
-        let totalElevationGain = 0;
-        let totalElevationLoss = 0;
-        let lastPosition = null;
-        let map = null;
-        let mapPolyline = null;
-        let currentMapLayer = 'standard';
-        let initialAltitude = null;
+        let elevationGain = 0;
         let maxSpeed = 0;
-        let startCoords = null;
-        let videoOrientation = 'landscape'; // 'landscape' or 'portrait'
-        
-        // Configuración de mapas
-        const mapLayers = {
-            standard: L.tileLayer('https://{s}.tile.openstreetmap.org/{z}/{x}/{y}.png', {
-                attribution: '© OpenStreetMap'
-            }),
-            satellite: L.tileLayer('https://server.arcgisonline.com/ArcGIS/rest/services/World_Imagery/MapServer/tile/{z}/{y}/{x}', {
-                attribution: '© Esri'
-            }),
-            terrain: L.tileLayer('https://{s}.tile.opentopomap.org/{z}/{x}/{y}.png', {
-                attribution: '© OpenTopoMap'
-            }),
-            hybrid: L.tileLayer('https://server.arcgisonline.com/ArcGIS/rest/services/World_Imagery/MapServer/tile/{z}/{y}/{x}', {
-                attribution: '© Esri'
-            })
-        };
+        let initialAltitude = null;
 
-        // Inicializar aplicación
-        document.addEventListener('DOMContentLoaded', () => {
-            initializeApp();
+        // ============================================
+        // INICIALIZACIÓN DE LA APLICACIÓN
+        // ============================================
+        document.addEventListener('DOMContentLoaded', async () => {
+            console.log('Inicializando aplicación...');
+            await initializeApp();
             setupEventListeners();
-            checkGPSPermissions();
         });
 
-        // Inicializar aplicación
-        function initializeApp() {
-            // Inicializar mapa
-            initMap();
-            
-            // Configurar controles de mapa
-            setupMapControls();
-            
-            // Mostrar estado inicial
-            updateGPSStatus(false);
-            
-            // Inicializar calidad de video
-            initVideoQuality();
-            
-            // Mostrar mensaje de bienvenida
-            showToast('TrackRun Pro listo. Conectando con GPS...', 'info');
+        // ============================================
+        // FUNCIÓN PRINCIPAL DE INICIALIZACIÓN
+        // ============================================
+        async function initializeApp() {
+            try {
+                // 1. Inicializar mapa inmediatamente
+                initMap();
+                
+                // 2. Solicitar permisos GPS explícitamente
+                await requestGPSPermissions();
+                
+                // 3. Obtener ubicación inicial
+                await getInitialLocation();
+                
+                // 4. Configurar interfaz
+                updateUIForReadyState();
+                
+                showToast('Aplicación lista. Puedes iniciar tu carrera.', 'success');
+                
+            } catch (error) {
+                console.error('Error en inicialización:', error);
+                showToast(`Error: ${error.message}`, 'error');
+                showManualLocationPrompt();
+            }
         }
 
-        // Inicializar mapa
+        // ============================================
+        // 1. INICIALIZAR MAPA (SIN GPS)
+        // ============================================
         function initMap() {
-            // Usar ubicación por defecto (Madrid) hasta que obtengamos GPS
-            const defaultLocation = [40.4168, -3.7038];
-            
-            // Crear mapa
-            map = L.map('map', {
-                center: defaultLocation,
-                zoom: 13,
-                zoomControl: false,
-                preferCanvas: true
-            });
-
-            // Añadir capa inicial
-            mapLayers.standard.addTo(map);
-            currentMapLayer = 'standard';
-
-            // Añadir controles
-            L.control.zoom({ position: 'topright' }).addTo(map);
-            L.control.scale({ position: 'bottomleft' }).addTo(map);
-
-            // Añadir geocoder
-            L.Control.geocoder({
-                defaultMarkGeocode: false,
-                position: 'topleft'
-            }).on('markgeocode', function(e) {
-                const bbox = e.geocode.bbox;
-                map.fitBounds(bbox);
-            }).addTo(map);
-        }
-
-        // Configurar controles de mapa
-        function setupMapControls() {
-            // Botones de tipo de mapa
-            document.querySelectorAll('.map-type-btn').forEach(btn => {
-                btn.addEventListener('click', function() {
-                    const type = this.dataset.type;
-                    
-                    // Remover clase active de todos los botones
-                    document.querySelectorAll('.map-type-btn').forEach(b => b.classList.remove('active'));
-                    // Añadir clase active al botón clickeado
-                    this.classList.add('active');
-                    
-                    // Cambiar capa del mapa
-                    changeMapLayer(type);
-                });
-            });
-
-            // Botón para centrar mapa
-            document.getElementById('centerMapBtn').addEventListener('click', centerMapOnUser);
-        }
-
-        // Cambiar capa del mapa
-        function changeMapLayer(type) {
-            // Remover capa actual
-            map.eachLayer(layer => {
-                if (layer instanceof L.TileLayer) {
-                    map.removeLayer(layer);
-                }
-            });
-
-            // Añadir nueva capa
-            mapLayers[type].addTo(map);
-            
-            // Si es híbrido, añadir capa de etiquetas
-            if (type === 'hybrid') {
+            try {
+                // Usar ubicación por defecto (Madrid)
+                const defaultLocation = [40.4168, -3.7038];
+                const defaultZoom = 13;
+                
+                map = L.map('map').setView(defaultLocation, defaultZoom);
+                
+                // Añadir capa base
                 L.tileLayer('https://{s}.tile.openstreetmap.org/{z}/{x}/{y}.png', {
                     attribution: '© OpenStreetMap',
-                    opacity: 0.5
+                    maxZoom: 19
+                }).addTo(map);
+                
+                // Añadir controles
+                L.control.zoom({ position: 'topright' }).addTo(map);
+                L.control.scale({ position: 'bottomleft' }).addTo(map);
+                
+                console.log('Mapa inicializado correctamente');
+                updateGPSStatus('mapa_listo', 'Mapa listo. Esperando GPS...');
+                
+            } catch (error) {
+                console.error('Error al inicializar mapa:', error);
+                showToast('Error al cargar el mapa', 'error');
+            }
+        }
+
+        // ============================================
+        // 2. SOLICITAR PERMISOS GPS
+        // ============================================
+        function requestGPSPermissions() {
+            return new Promise((resolve, reject) => {
+                if (!navigator.geolocation) {
+                    reject(new Error('Tu navegador no soporta geolocalización'));
+                    return;
+                }
+                
+                console.log('Solicitando permisos GPS...');
+                updateGPSStatus('solicitando_permisos', 'Solicitando permisos de ubicación...');
+                
+                // Intentar obtener ubicación para solicitar permisos
+                navigator.geolocation.getCurrentPosition(
+                    (position) => {
+                        console.log('Permisos GPS concedidos');
+                        updateGPSStatus('permisos_concedidos', 'Permisos GPS concedidos');
+                        resolve(position);
+                    },
+                    (error) => {
+                        console.warn('Permisos GPS no concedidos:', error.message);
+                        updateGPSStatus('permisos_denegados', 'Permisos de ubicación no concedidos');
+                        reject(new Error('Permisos de ubicación no concedidos'));
+                    },
+                    {
+                        enableHighAccuracy: true,
+                        timeout: 10000,
+                        maximumAge: 0
+                    }
+                );
+            });
+        }
+
+        // ============================================
+        // 3. OBTENER UBICACIÓN INICIAL
+        // ============================================
+        function getInitialLocation() {
+            return new Promise((resolve, reject) => {
+                console.log('Obteniendo ubicación inicial...');
+                updateGPSStatus('obteniendo_ubicacion', 'Obteniendo tu ubicación...');
+                
+                navigator.geolocation.getCurrentPosition(
+                    (position) => {
+                        console.log('Ubicación obtenida:', position.coords);
+                        handleNewPosition(position, true);
+                        resolve(position);
+                    },
+                    (error) => {
+                        console.warn('No se pudo obtener ubicación:', error.message);
+                        updateGPSStatus('error_ubicacion', 'No se pudo obtener ubicación');
+                        reject(error);
+                    },
+                    {
+                        enableHighAccuracy: true,
+                        timeout: 15000,
+                        maximumAge: 0
+                    }
+                );
+            });
+        }
+
+        // ============================================
+        // 4. MANEJAR NUEVA POSICIÓN GPS
+        // ============================================
+        function handleNewPosition(position, isInitial = false) {
+            const coords = position.coords;
+            console.log('Nueva posición:', coords);
+            
+            // Actualizar posición actual
+            currentPosition = {
+                lat: coords.latitude,
+                lng: coords.longitude,
+                altitude: coords.altitude || 0,
+                speed: coords.speed || 0,
+                accuracy: coords.accuracy,
+                timestamp: new Date(position.timestamp)
+            };
+            
+            // Si es la primera posición, establecer como punto de inicio
+            if (isInitial) {
+                startPosition = { ...currentPosition };
+                positions = [currentPosition];
+                updateStartPointMarker();
+            } else if (isTracking) {
+                // Calcular distancia desde la última posición
+                if (positions.length > 0) {
+                    const lastPos = positions[positions.length - 1];
+                    const distance = calculateDistance(
+                        lastPos.lat, lastPos.lng,
+                        currentPosition.lat, currentPosition.lng
+                    );
+                    totalDistance += distance;
+                    
+                    // Calcular desnivel
+                    if (lastPos.altitude && currentPosition.altitude) {
+                        const elevationDiff = currentPosition.altitude - lastPos.altitude;
+                        if (elevationDiff > 0) {
+                            elevationGain += elevationDiff;
+                        }
+                    }
+                    
+                    // Actualizar velocidad máxima
+                    if (currentPosition.speed > maxSpeed) {
+                        maxSpeed = currentPosition.speed;
+                    }
+                }
+                
+                positions.push(currentPosition);
+            }
+            
+            // Actualizar interfaz
+            updateMapWithPosition(currentPosition, isInitial);
+            updateGPSDisplay(coords);
+            updateStatsDisplay();
+            
+            // Mostrar estado GPS
+            updateGPSStatus('gps_activo', 'GPS activo y funcionando');
+            
+            // Habilitar botón de inicio si no estamos trackeando
+            if (!isTracking) {
+                document.getElementById('startBtn').disabled = false;
+            }
+        }
+
+        // ============================================
+        // 5. ACTUALIZAR MAPA CON POSICIÓN
+        // ============================================
+        function updateMapWithPosition(position, isInitial = false) {
+            const latLng = [position.lat, position.lng];
+            
+            // Centrar mapa en la posición
+            map.setView(latLng, 16);
+            
+            // Actualizar o crear marcador
+            if (!userMarker) {
+                userMarker = L.marker(latLng, {
+                    icon: L.divIcon({
+                        className: 'user-marker',
+                        html: '<div style="background: #FF6B35; width: 24px; height: 24px; border-radius: 50%; border: 3px solid white; box-shadow: 0 0 10px rgba(0,0,0,0.5);"></div>',
+                        iconSize: [24, 24]
+                    })
+                }).addTo(map);
+                
+                userMarker.bindPopup('<b>Tu ubicación actual</b><br>Precisión: ' + Math.round(position.accuracy) + 'm').openPopup();
+            } else {
+                userMarker.setLatLng(latLng);
+            }
+            
+            // Dibujar ruta si estamos trackeando
+            if (isTracking && positions.length > 1) {
+                if (routePolyline) {
+                    map.removeLayer(routePolyline);
+                }
+                
+                const latLngs = positions.map(p => [p.lat, p.lng]);
+                routePolyline = L.polyline(latLngs, {
+                    color: '#FF6B35',
+                    weight: 4,
+                    opacity: 0.8,
+                    lineJoin: 'round'
                 }).addTo(map);
             }
             
-            currentMapLayer = type;
-        }
-
-        // Centrar mapa en el usuario
-        function centerMapOnUser() {
-            if (navigator.geolocation) {
-                navigator.geolocation.getCurrentPosition(position => {
-                    const lat = position.coords.latitude;
-                    const lng = position.coords.longitude;
-                    
-                    map.setView([lat, lng], 15);
-                    showToast('Mapa centrado en tu ubicación', 'success');
-                }, error => {
-                    showToast('No se pudo obtener la ubicación', 'error');
-                });
+            // Si es posición inicial, mostrar mensaje
+            if (isInitial) {
+                showToast('Ubicación obtenida correctamente', 'success');
+                updateGPSStatus('listo_para_iniciar', 'Listo para iniciar carrera');
             }
         }
 
-        // Configurar event listeners
-        function setupEventListeners() {
-            // Botones de control
-            document.getElementById('startBtn').addEventListener('click', startTracking);
-            document.getElementById('stopBtn').addEventListener('click', stopTracking);
-            document.getElementById('resetBtn').addEventListener('click', resetTracking);
-            
-            // Botón de exportación
-            document.getElementById('exportBtn').addEventListener('click', generateVideo);
-            
-            // Botones de orientación de video
-            document.getElementById('landscapeBtn').addEventListener('click', function() {
-                videoOrientation = 'landscape';
-                this.classList.add('active');
-                document.getElementById('portraitBtn').classList.remove('active');
-            });
-            
-            document.getElementById('portraitBtn').addEventListener('click', function() {
-                videoOrientation = 'portrait';
-                this.classList.add('active');
-                document.getElementById('landscapeBtn').classList.remove('active');
-            });
-            
-            // Botones de configuración
-            document.getElementById('fullscreenBtn').addEventListener('click', toggleFullscreen);
-            document.getElementById('settingsBtn').addEventListener('click', showSettings);
-            
-            // Modal
-            document.getElementById('closeModal').addEventListener('click', () => {
-                document.getElementById('videoModal').style.display = 'none';
-            });
-        }
-
-        // Inicializar calidad de video
-        function initVideoQuality() {
-            document.querySelectorAll('.quality-option').forEach(option => {
-                option.addEventListener('click', function() {
-                    document.querySelectorAll('.quality-option').forEach(opt => opt.classList.remove('active'));
-                    this.classList.add('active');
-                });
-            });
-        }
-
-        // Verificar permisos GPS
-        function checkGPSPermissions() {
-            if (navigator.permissions && navigator.permissions.query) {
-                navigator.permissions.query({ name: 'geolocation' }).then(result => {
-                    if (result.state === 'granted') {
-                        updateGPSStatus(true);
-                        centerMapOnUser();
-                    } else if (result.state === 'prompt') {
-                        updateGPSStatus(false);
-                    }
-                });
-            }
-        }
-
-        // Actualizar estado GPS
-        function updateGPSStatus(connected) {
-            const indicator = document.getElementById('gpsIndicator');
-            const statusText = document.getElementById('gpsStatusText');
-            
-            if (connected) {
-                indicator.classList.add('active');
-                indicator.style.animation = 'pulse 2s infinite';
-                statusText.textContent = 'GPS Conectado';
-                statusText.style.color = '#4CAF50';
-            } else {
-                indicator.classList.remove('active');
-                indicator.style.animation = 'pulse 2s infinite';
-                statusText.textContent = 'Buscando señal GPS...';
-                statusText.style.color = '#FF9800';
-            }
-        }
-
-        // Iniciar seguimiento
+        // ============================================
+        // 6. INICIAR SEGUIMIENTO DE CARRERA
+        // ============================================
         function startTracking() {
-            if (!navigator.geolocation) {
-                showToast('Tu navegador no soporta geolocalización', 'error');
+            if (!currentPosition) {
+                showToast('Primero obtén tu ubicación actual', 'warning');
                 return;
             }
-
-            // Resetear datos anteriores
-            resetTrackingData();
             
+            console.log('Iniciando seguimiento de carrera...');
+            
+            // Reiniciar variables de carrera
             isTracking = true;
             startTime = new Date();
+            totalDistance = 0;
+            elevationGain = 0;
+            maxSpeed = 0;
+            positions = [currentPosition];
             
-            // Actualizar UI
-            document.getElementById('startBtn').disabled = true;
-            document.getElementById('stopBtn').disabled = false;
-            document.getElementById('exportBtn').disabled = true;
-            
-            // Iniciar temporizador
-            updateTimer();
+            // Configurar intervalo del temporizador
             timerInterval = setInterval(updateTimer, 1000);
             
-            // Iniciar seguimiento GPS
+            // Iniciar seguimiento GPS continuo
             watchId = navigator.geolocation.watchPosition(
-                position => handleNewPosition(position),
-                error => handleGPSError(error),
+                (position) => handleNewPosition(position),
+                (error) => handleGPSError(error),
                 {
                     enableHighAccuracy: true,
                     maximumAge: 0,
@@ -1097,86 +816,87 @@
                 }
             );
             
-            showToast('Carrera iniciada - Grabando recorrido', 'success');
+            // Actualizar interfaz
+            document.getElementById('startBtn').disabled = true;
+            document.getElementById('stopBtn').disabled = false;
+            document.getElementById('startPoint').style.display = 'flex';
+            
+            // Mostrar punto de inicio en el mapa
+            updateStartPointMarker();
+            
+            showToast('¡Carrera iniciada! Grabando tu recorrido...', 'success');
+            updateGPSStatus('grabando', 'Grabando recorrido...');
         }
 
-        // Manejar nueva posición GPS
-        function handleNewPosition(position) {
-            updateGPSStatus(true);
+        // ============================================
+        // 7. DETENER SEGUIMIENTO
+        // ============================================
+        function stopTracking() {
+            console.log('Deteniendo seguimiento...');
             
-            const lat = position.coords.latitude;
-            const lng = position.coords.longitude;
-            const altitude = position.coords.altitude;
-            const speed = position.coords.speed;
-            const accuracy = position.coords.accuracy;
+            isTracking = false;
             
-            // Actualizar precisión GPS
-            document.getElementById('gpsAccuracy').textContent = `Precisión: ${Math.round(accuracy)} metros`;
+            // Detener temporizador
+            clearInterval(timerInterval);
             
-            // Guardar altitud inicial si es la primera posición
-            if (!initialAltitude && altitude) {
-                initialAltitude = altitude;
-                document.getElementById('initialAltitude').textContent = `${Math.round(altitude)} m`;
+            // Detener seguimiento GPS
+            if (watchId !== null) {
+                navigator.geolocation.clearWatch(watchId);
+                watchId = null;
             }
             
-            // Guardar coordenadas iniciales
-            if (!startCoords) {
-                startCoords = { lat, lng };
-            }
+            // Actualizar interfaz
+            document.getElementById('startBtn').disabled = false;
+            document.getElementById('stopBtn').disabled = true;
             
-            // Crear objeto de posición
-            const newPosition = {
-                lat,
-                lng,
-                altitude: altitude || 0,
-                speed: speed || 0,
-                accuracy,
-                timestamp: new Date(position.timestamp)
-            };
-            
-            // Añadir a la ruta
-            currentRoute.push(newPosition);
-            
-            // Calcular estadísticas si tenemos posición anterior
-            if (lastPosition) {
-                calculateRouteStats(newPosition);
-            }
-            
-            // Actualizar última posición
-            lastPosition = newPosition;
-            
-            // Actualizar UI
-            updateStatsDisplay();
-            updateMap(newPosition);
-            
-            // Actualizar velocidad máxima
-            if (speed > maxSpeed) {
-                maxSpeed = speed;
-            }
+            showToast('Carrera finalizada', 'info');
+            updateGPSStatus('finalizado', 'Carrera finalizada');
         }
 
-        // Calcular estadísticas de ruta
-        function calculateRouteStats(newPosition) {
-            // Calcular distancia
-            const distance = calculateDistance(
-                lastPosition.lat, lastPosition.lng,
-                newPosition.lat, newPosition.lng
-            );
+        // ============================================
+        // 8. REINICIAR TODO
+        // ============================================
+        function resetTracking() {
+            console.log('Reiniciando todo...');
             
-            totalDistance += distance;
-            
-            // Calcular desnivel
-            if (lastPosition.altitude && newPosition.altitude) {
-                const elevationDiff = newPosition.altitude - lastPosition.altitude;
-                if (elevationDiff > 0) {
-                    totalElevationGain += elevationDiff;
-                } else {
-                    totalElevationLoss += Math.abs(elevationDiff);
-                }
+            // Detener si está activo
+            if (isTracking) {
+                stopTracking();
             }
+            
+            // Reiniciar variables
+            startTime = null;
+            totalDistance = 0;
+            elevationGain = 0;
+            maxSpeed = 0;
+            positions = [];
+            startPosition = null;
+            
+            // Limpiar mapa
+            if (routePolyline) {
+                map.removeLayer(routePolyline);
+                routePolyline = null;
+            }
+            
+            // Reiniciar estadísticas
+            document.getElementById('distance').textContent = '0.00';
+            document.getElementById('pace').textContent = '--:--';
+            document.getElementById('time').textContent = '00:00:00';
+            document.getElementById('elevation').textContent = '+0';
+            document.getElementById('speed').textContent = '0.0';
+            document.getElementById('calories').textContent = '0';
+            
+            // Ocultar punto de inicio
+            document.getElementById('startPoint').style.display = 'none';
+            
+            showToast('Todo reiniciado', 'info');
         }
 
-        // Calcular distancia (Fórmula de Haversine)
+        // ============================================
+        // 9. FUNCIONES AUXILIARES
+        // ============================================
+
+        // Calcular distancia entre dos puntos
         function calculateDistance(lat1, lon1, lat2, lon2) {
             const R = 6371; // Radio de la Tierra en km
             const dLat = (lat2 - lat1) * Math.PI / 180;
@@ -1187,46 +907,6 @@
                 Math.sin(dLon/2) * Math.sin(dLon/2);
             const c = 2 * Math.atan2(Math.sqrt(a), Math.sqrt(1-a));
             return R * c;
-        }
-
-        // Actualizar mapa
-        function updateMap(position) {
-            const lat = position.lat;
-            const lng = position.lng;
-            
-            // Centrar mapa en posición actual
-            map.setView([lat, lng], map.getZoom());
-            
-            // Actualizar ruta en el mapa
-            if (currentRoute.length > 1) {
-                const latLngs = currentRoute.map(p => [p.lat, p.lng]);
-                
-                if (mapPolyline) {
-                    map.removeLayer(mapPolyline);
-                }
-                
-                mapPolyline = L.polyline(latLngs, {
-                    color: '#FF6B35',
-                    weight: 4,
-                    opacity: 0.8,
-                    lineJoin: 'round',
-                    lineCap: 'round'
-                }).addTo(map);
-            }
-            
-            // Añadir marcador de posición actual
-            if (map.getPane('currentPosition')) {
-                map.removeLayer(map.getPane('currentPosition'));
-            }
-            
-            L.circleMarker([lat, lng], {
-                radius: 8,
-                fillColor: '#FF6B35',
-                color: '#FFFFFF',
-                weight: 3,
-                opacity: 1,
-                fillOpacity: 0.8
-            }).addTo(map).bindTooltip('Tu posición actual', {permanent: false, direction: 'top'});
         }
 
         // Actualizar temporizador
@@ -1241,251 +921,182 @@
             
             document.getElementById('time').textContent = 
                 `${hours.toString().padStart(2, '0')}:${minutes.toString().padStart(2, '0')}:${seconds.toString().padStart(2, '0')}`;
-        }
-
-        // Actualizar estadísticas en pantalla
-        function updateStatsDisplay() {
-            // Distancia
-            document.getElementById('distance').textContent = totalDistance.toFixed(2);
             
-            // Tiempo ya se actualiza en updateTimer()
-            
-            // Ritmo (Pace) - min/km
+            // Actualizar ritmo
             if (totalDistance > 0) {
-                const elapsedSeconds = Math.floor((new Date() - startTime) / 1000);
                 const paceSeconds = elapsedSeconds / totalDistance;
                 const paceMinutes = Math.floor(paceSeconds / 60);
                 const paceSecs = Math.floor(paceSeconds % 60);
                 document.getElementById('pace').textContent = 
                     `${paceMinutes}:${paceSecs.toString().padStart(2, '0')}`;
-                
-                // Actualizar ritmo promedio
-                document.getElementById('avgPace').textContent = 
-                    `${paceMinutes}:${paceSecs.toString().padStart(2, '0')} min/km`;
             }
+        }
+
+        // Actualizar estadísticas
+        function updateStatsDisplay() {
+            // Distancia
+            document.getElementById('distance').textContent = totalDistance.toFixed(2);
             
             // Desnivel
-            document.getElementById('elevation').textContent = `+${Math.round(totalElevationGain)}`;
-            document.getElementById('totalElevation').textContent = 
-                `+${Math.round(totalElevationGain)} m / -${Math.round(totalElevationLoss)} m`;
+            document.getElementById('elevation').textContent = `+${Math.round(elevationGain)}`;
             
             // Velocidad
-            const currentSpeed = lastPosition ? (lastPosition.speed * 3.6) : 0; // m/s a km/h
-            document.getElementById('speed').textContent = currentSpeed.toFixed(1);
+            const speedKmph = currentPosition ? (currentPosition.speed * 3.6) : 0;
+            document.getElementById('speed').textContent = speedKmph.toFixed(1);
             
-            // Velocidad máxima
-            document.getElementById('maxSpeed').textContent = `${(maxSpeed * 3.6).toFixed(1)} km/h`;
-            
-            // Calorías (fórmula simplificada)
-            const elapsedMinutes = Math.floor((new Date() - startTime) / 60000);
-            const calories = elapsedMinutes * 10; // 10 kcal por minuto aproximado
-            document.getElementById('calories').textContent = Math.round(calories);
-            document.getElementById('caloriesPerMin').textContent = 
-                elapsedMinutes > 0 ? (calories / elapsedMinutes).toFixed(1) : '0.0';
+            // Calorías (estimación simple)
+            if (startTime) {
+                const minutes = (new Date() - startTime) / 60000;
+                const calories = minutes * 10; // 10 kcal por minuto
+                document.getElementById('calories').textContent = Math.round(calories);
+            }
         }
 
-        // Manejar error GPS
-        function handleGPSError(error) {
-            updateGPSStatus(false);
+        // Actualizar display GPS
+        function updateGPSDisplay(coords) {
+            document.getElementById('accuracyText').textContent = 
+                `${Math.round(coords.accuracy)} metros`;
             
+            document.getElementById('altitudeText').textContent = 
+                coords.altitude ? `${Math.round(coords.altitude)} metros` : '-- metros';
+            
+            document.getElementById('statusText').textContent = 
+                isTracking ? 'Grabando carrera' : 'GPS activo';
+        }
+
+        // Actualizar marcador de punto de inicio
+        function updateStartPointMarker() {
+            if (startPosition && userMarker) {
+                // Crear marcador de inicio
+                const startMarker = L.marker([startPosition.lat, startPosition.lng], {
+                    icon: L.divIcon({
+                        className: 'start-marker',
+                        html: '<div style="background: #4CAF50; width: 20px; height: 20px; border-radius: 50%; border: 3px solid white; box-shadow: 0 0 10px rgba(76,175,80,0.8);"></div>',
+                        iconSize: [20, 20]
+                    })
+                }).addTo(map);
+                
+                startMarker.bindPopup('<b>Punto de inicio</b><br>Haz clic aquí para centrar').on('click', () => {
+                    map.setView([startPosition.lat, startPosition.lng], 16);
+                });
+            }
+        }
+
+        // Manejar errores GPS
+        function handleGPSError(error) {
+            console.error('Error GPS:', error);
+            
+            let message = 'Error de GPS: ';
             switch(error.code) {
                 case error.PERMISSION_DENIED:
-                    showToast('Permiso de ubicación denegado', 'error');
+                    message += 'Permisos denegados. Por favor, habilita la ubicación en tu navegador.';
+                    updateGPSStatus('permisos_denegados', 'Permisos denegados');
                     break;
                 case error.POSITION_UNAVAILABLE:
-                    showToast('Señal GPS no disponible', 'error');
+                    message += 'Ubicación no disponible.';
+                    updateGPSStatus('no_disponible', 'GPS no disponible');
                     break;
                 case error.TIMEOUT:
-                    showToast('Tiempo de espera agotado', 'error');
+                    message += 'Tiempo de espera agotado.';
+                    updateGPSStatus('timeout', 'Timeout GPS');
                     break;
                 default:
-                    showToast('Error desconocido en GPS', 'error');
+                    message += 'Error desconocido.';
+                    updateGPSStatus('error', 'Error GPS');
                     break;
             }
+            
+            showToast(message, 'error');
         }
 
-        // Detener seguimiento
-        function stopTracking() {
-            isTracking = false;
+        // Actualizar estado GPS en overlay
+        function updateGPSStatus(status, message) {
+            const indicator = document.getElementById('gpsIndicator');
+            const statusText = document.getElementById('gpsStatusText');
+            const details = document.getElementById('gpsDetails');
             
-            // Detener temporizador
-            clearInterval(timerInterval);
+            statusText.textContent = message;
+            details.textContent = getStatusDetails(status);
             
-            // Detener seguimiento GPS
-            if (watchId !== null) {
-                navigator.geolocation.clearWatch(watchId);
-                watchId = null;
+            // Actualizar indicador visual
+            indicator.classList.remove('active');
+            if (status === 'gps_activo' || status === 'grabando' || status === 'listo_para_iniciar') {
+                indicator.classList.add('active');
             }
+        }
+
+        // Obtener detalles del estado
+        function getStatusDetails(status) {
+            const details = {
+                'solicitando_permisos': 'Por favor, acepta los permisos en la ventana emergente...',
+                'permisos_concedidos': 'Permisos concedidos. Obteniendo ubicación...',
+                'permisos_denegados': 'Habilita la ubicación en configuración del navegador',
+                'obteniendo_ubicacion': 'Buscando señal GPS...',
+                'gps_activo': 'Señal GPS estable',
+                'listo_para_iniciar': 'Presiona "INICIAR CARRERA" para comenzar',
+                'grabando': 'Grabando tu recorrido en tiempo real',
+                'finalizado': 'Carrera completada',
+                'error': 'Error en el sistema GPS'
+            };
             
-            // Actualizar UI
+            return details[status] || 'Estado desconocido';
+        }
+
+        // Mostrar prompt manual de ubicación
+        function showManualLocationPrompt() {
+            const instructions = document.getElementById('gpsInstructions');
+            instructions.innerHTML = `
+                <p><i class="fas fa-exclamation-triangle" style="color: #FF9800;"></i> 
+                <strong>No se pudo obtener ubicación automática</strong></p>
+                <p style="margin-top: 8px;">Por favor:</p>
+                <ol style="margin-left: 20px; margin-top: 5px;">
+                    <li>Acepta los permisos de ubicación</li>
+                    <li>Haz clic en "UBICARME AHORA"</li>
+                    <li>Asegúrate de tener GPS activado</li>
+                </ol>
+            `;
+        }
+
+        // Actualizar UI para estado listo
+        function updateUIForReadyState() {
             document.getElementById('startBtn').disabled = false;
-            document.getElementById('stopBtn').disabled = true;
-            document.getElementById('exportBtn').disabled = false;
-            
-            showToast('Carrera finalizada - Listo para exportar', 'success');
+            document.getElementById('locateBtn').disabled = false;
         }
 
-        // Reiniciar datos de seguimiento
-        function resetTrackingData() {
-            totalDistance = 0;
-            totalElevationGain = 0;
-            totalElevationLoss = 0;
-            maxSpeed = 0;
-            initialAltitude = null;
-            startCoords = null;
-            currentRoute = [];
-            lastPosition = null;
+        // ============================================
+        // CONFIGURACIÓN DE EVENT LISTENERS
+        // ============================================
+        function setupEventListeners() {
+            // Botones principales
+            document.getElementById('startBtn').addEventListener('click', startTracking);
+            document.getElementById('stopBtn').addEventListener('click', stopTracking);
+            document.getElementById('resetBtn').addEventListener('click', resetTracking);
             
-            if (mapPolyline) {
-                map.removeLayer(mapPolyline);
-                mapPolyline = null;
-            }
-            
-            // Resetear UI
-            document.getElementById('distance').textContent = '0.00';
-            document.getElementById('pace').textContent = '--:--';
-            document.getElementById('time').textContent = '00:00:00';
-            document.getElementById('elevation').textContent = '+0';
-            document.getElementById('speed').textContent = '0.0';
-            document.getElementById('calories').textContent = '0';
-            document.getElementById('maxSpeed').textContent = '0.0 km/h';
-            document.getElementById('avgPace').textContent = '--:-- min/km';
-            document.getElementById('totalElevation').textContent = '+0 m / -0 m';
-            document.getElementById('caloriesPerMin').textContent = '0.0';
-            document.getElementById('initialAltitude').textContent = '-- m';
-        }
-
-        // Reiniciar completamente
-        function resetTracking() {
-            if (isTracking) {
-                stopTracking();
-            }
-            
-            resetTrackingData();
-            showToast('Datos reiniciados', 'info');
-        }
-
-        // Generar video del recorrido
-        function generateVideo() {
-            if (currentRoute.length < 2) {
-                showToast('No hay suficiente recorrido para generar video', 'error');
-                return;
-            }
-
-            // Obtener calidad seleccionada
-            const qualityOption = document.querySelector('.quality-option.active');
-            const quality = qualityOption.dataset.quality;
-            
-            // Mostrar modal de carga
-            const exportBtn = document.getElementById('exportBtn');
-            exportBtn.innerHTML = '<i class="fas fa-spinner fa-spin"></i> GENERANDO VIDEO...';
-            exportBtn.disabled = true;
-            
-            // Simular generación de video
-            setTimeout(() => {
-                // Crear vista previa del video
-                const videoPreview = document.getElementById('videoPreview');
-                videoPreview.innerHTML = `
-                    <div style="background: #2D3047; padding: 20px; border-radius: 12px; text-align: center;">
-                        <div style="background: #1A1A2E; padding: 15px; border-radius: 8px; margin-bottom: 15px;">
-                            <h4 style="color: #FF6B35; margin-bottom: 10px;">Vista previa del video</h4>
-                            <div style="background: #000; height: ${videoOrientation === 'landscape' ? '200px' : '350px'}; 
-                                 border-radius: 8px; display: flex; align-items: center; justify-content: center;">
-                                <i class="fas fa-play-circle" style="font-size: 3rem; color: #FF6B35;"></i>
-                            </div>
-                        </div>
-                        <div style="text-align: left;">
-                            <p><i class="fas fa-info-circle" style="color: #00A8E8;"></i> 
-                            <strong>Calidad:</strong> ${quality.toUpperCase()}</p>
-                            <p><i class="fas fa-video" style="color: #00A8E8;"></i> 
-                            <strong>Resolución:</strong> ${getVideoResolution(quality, videoOrientation)}</p>
-                            <p><i class="fas fa-clock" style="color: #00A8E8;"></i> 
-                            <strong>Duración:</strong> ${document.getElementById('time').textContent}</p>
-                            <p><i class="fas fa-compress" style="color: #00A8E8;"></i> 
-                            <strong>Tamaño estimado:</strong> ${getFileSize(quality)}</p>
-                            <p><i class="fas fa-check-circle" style="color: #4CAF50;"></i> 
-                            <strong>Compatible con:</strong> Todos los dispositivos</p>
-                        </div>
-                    </div>
-                `;
-                
-                // Mostrar modal
-                document.getElementById('videoModal').style.display = 'flex';
-                
-                // Restaurar botón de exportación
-                exportBtn.innerHTML = '<i class="fas fa-download"></i> GENERAR Y DESCARGAR VIDEO';
-                exportBtn.disabled = false;
-                
-                // Configurar botón de descarga
-                document.getElementById('downloadVideoBtn').onclick = downloadVideo;
-                
-                showToast('Video generado exitosamente', 'success');
-            }, 2000);
-        }
-
-        // Obtener resolución de video
-        function getVideoResolution(quality, orientation) {
-            const resolutions = {
-                '4k': { landscape: '3840x2160', portrait: '2160x3840' },
-                '1080p': { landscape: '1920x1080', portrait: '1080x1920' },
-                '720p': { landscape: '1280x720', portrait: '720x1280' }
-            };
-            return resolutions[quality][orientation];
-        }
-
-        // Obtener tamaño de archivo estimado
-        function getFileSize(quality) {
-            const sizes = {
-                '4k': '150-300 MB',
-                '1080p': '50-100 MB',
-                '720p': '20-40 MB'
-            };
-            return sizes[quality];
-        }
-
-        // Descargar video
-        function downloadVideo() {
-            const qualityOption = document.querySelector('.quality-option.active');
-            const quality = qualityOption.dataset.quality;
-            
-            // Crear nombre de archivo
-            const date = new Date().toISOString().slice(0, 19).replace(/[:]/g, '-');
-            const filename = `TrackRun_${date}_${quality}_${videoOrientation}.mp4`;
-            
-            // Simular descarga
-            showToast(`Descargando video ${quality.toUpperCase()}...`, 'info');
-            
-            // Simular descarga completa
-            setTimeout(() => {
-                document.getElementById('videoModal').style.display = 'none';
-                showToast('Video descargado exitosamente', 'success');
-                
-                // Aquí en una implementación real se usaría una librería como:
-                // - html2canvas + ffmpeg.js para capturar el mapa y generar video
-                // - MediaRecorder API para grabar en tiempo real
-                // - Una combinación de Canvas API y WebGL para renderizado avanzado
-            }, 1500);
-        }
-
-        // Alternar pantalla completa
-        function toggleFullscreen() {
-            if (!document.fullscreenElement) {
-                document.documentElement.requestFullscreen().catch(err => {
-                    showToast(`Error al activar pantalla completa: ${err.message}`, 'error');
+            // Botón de ubicación manual
+            document.getElementById('locateBtn').addEventListener('click', () => {
+                getInitialLocation().catch(() => {
+                    showToast('No se pudo obtener ubicación. Revisa los permisos.', 'error');
                 });
-            } else {
-                if (document.exitFullscreen) {
-                    document.exitFullscreen();
+            });
+            
+            // Permitir clic en mapa para debugging
+            map.on('click', (e) => {
+                console.log('Clic en mapa:', e.latlng);
+            });
+            
+            // Mostrar coordenadas al mover el mouse
+            map.on('mousemove', (e) => {
+                // Solo para debugging
+                if (document.getElementById('gpsDebug').style.display === 'block') {
+                    document.getElementById('debugPosition').textContent = 
+                        `${e.latlng.lat.toFixed(6)}, ${e.latlng.lng.toFixed(6)}`;
                 }
-            }
+            });
         }
 
-        // Mostrar configuración
-        function showSettings() {
-            showToast('Configuración - En desarrollo', 'info');
-        }
-
-        // Mostrar notificación toast
+        // ============================================
+        // FUNCIÓN DE TOAST NOTIFICATIONS
+        // ============================================
         function showToast(message, type = 'info') {
             const toast = document.getElementById('toast');
             const toastMessage = document.getElementById('toastMessage');
@@ -1494,13 +1105,15 @@
             toast.className = 'toast';
             if (type === 'error') toast.classList.add('error');
             if (type === 'warning') toast.classList.add('warning');
+            if (type === 'info') toast.classList.add('info');
             
             // Configurar icono
             const icon = toast.querySelector('i');
-            if (type === 'success') icon.className = 'fas fa-check-circle';
-            if (type === 'error') icon.className = 'fas fa-exclamation-circle';
-            if (type === 'warning') icon.className = 'fas fa-exclamation-triangle';
-            if (type === 'info') icon.className = 'fas fa-info-circle';
+            icon.className = 
+                type === 'success' ? 'fas fa-check-circle' :
+                type === 'error' ? 'fas fa-exclamation-circle' :
+                type === 'warning' ? 'fas fa-exclamation-triangle' :
+                'fas fa-info-circle';
             
             // Configurar mensaje
             toastMessage.textContent = message;
@@ -1508,18 +1121,26 @@
             // Mostrar
             toast.style.display = 'flex';
             
-            // Ocultar después de 3 segundos
+            // Ocultar después de 4 segundos
             setTimeout(() => {
                 toast.style.display = 'none';
-            }, 3000);
+            }, 4000);
+            
+            // Log en consola
+            console.log(`Toast [${type}]: ${message}`);
         }
 
-        // Manejar cambios en la orientación
-        window.addEventListener('resize', function() {
-            if (map) {
-                map.invalidateSize();
-            }
-        });
+        // ============================================
+        // FUNCIÓN PARA DEBUG (OPCIONAL)
+        // ============================================
+        function toggleDebug() {
+            const debug = document.getElementById('gpsDebug');
+            debug.style.display = debug.style.display === 'none' ? 'block' : 'none';
+        }
+
+        // Activar debug con doble clic en logo
+        document.querySelector('.logo-container').addEventListener('dblclick', toggleDebug);
+
     </script>
 </body>
 </html>
